@@ -1,0 +1,67 @@
+COMO TROCAR OS ICONES POR ILUSTRACOES (estilo Freepik)
+========================================================
+
+1) Consiga uma ilustracao para cada item da lista abaixo
+   (gerador de imagem por IA, banco de imagens, etc.).
+2) Salve o arquivo DENTRO desta pasta 'imagens'.
+3) O nome do arquivo tem que ser EXATAMENTE o codigo indicado,
+   com extensao .png (tambem aceita .webp .jpg .jpeg .svg).
+   Ex.:  imagens/agua.png   imagens/escovar.png
+4) Recarregue o index.html. O icone que tiver imagem passa a
+   mostrar a ilustracao; o que nao tiver continua com o desenho.
+
+Dica de arquivo: quadrado, no minimo 400x400 px, fundo branco
+ou transparente. PNG e o mais seguro.
+
+
+--- BÁSICO ---
+  imagens/sim.png           ->  Sim                (fala: "Sim")
+  imagens/nao.png           ->  Não                (fala: "Não")
+  imagens/mais.png          ->  Mais               (fala: "Mais")
+  imagens/chega.png         ->  Chega              (fala: "Chega, parar")
+  imagens/obrigado.png      ->  Obrigado           (fala: "Obrigado")
+  imagens/oi.png            ->  Oi                 (fala: "Oi!")
+  imagens/tchau.png         ->  Tchau              (fala: "Tchau!")
+  imagens/naoSei.png        ->  Não sei            (fala: "Não sei")
+
+--- PRECISO ---
+  imagens/agua.png          ->  Água               (fala: "Quero água")
+  imagens/comida.png        ->  Comida             (fala: "Estou com fome")
+  imagens/banheiro.png      ->  Banheiro           (fala: "Preciso ir ao banheiro")
+  imagens/brincar.png       ->  Brincar            (fala: "Quero brincar")
+  imagens/descansar.png     ->  Descansar          (fala: "Quero descansar")
+  imagens/silencio.png      ->  Ficar quieto       (fala: "Quero ficar sozinho um pouco")
+  imagens/abraco.png        ->  Abraço             (fala: "Quero um abraço")
+
+--- SINTO ---
+  imagens/feliz.png         ->  Feliz              (fala: "Estou feliz")
+  imagens/triste.png        ->  Triste             (fala: "Estou triste")
+  imagens/raiva.png         ->  Com raiva          (fala: "Estou com raiva")
+  imagens/medo.png          ->  Medo               (fala: "Estou com medo")
+  imagens/cansado.png       ->  Cansado            (fala: "Estou cansado")
+  imagens/calmo.png         ->  Calmo              (fala: "Estou calmo")
+  imagens/animado.png       ->  Animado            (fala: "Estou animado")
+  imagens/confuso.png       ->  Confuso            (fala: "Estou confuso")
+
+--- AJUDA ---
+  imagens/precisaAjuda.png  ->  Preciso de ajuda   (fala: "Preciso de ajuda")
+  imagens/naoEntendi.png    ->  Não entendi        (fala: "Não entendi")
+  imagens/doiAqui.png       ->  Dói aqui           (fala: "Dói aqui")
+  imagens/perdido.png       ->  Estou perdido      (fala: "Estou perdido")
+  imagens/quaseMae.png      ->  Quero meus pais    (fala: "Quero minha mãe ou meu pai")
+  imagens/precisaAdulto.png  ->  Preciso de adulto  (fala: "Preciso de um adulto")
+  imagens/ehDificil.png     ->  É difícil          (fala: "Isso é difícil para mim")
+  imagens/repetir.png       ->  Pode repetir?      (fala: "Pode repetir, por favor?")
+
+--- ROTINA ---
+  imagens/acordar.png       ->  Acordar            (fala: "Hora de acordar!")
+  imagens/escovar.png       ->  Escovar dentes     (fala: "Hora de escovar os dentes!")
+  imagens/banho.png         ->  Tomar banho        (fala: "Hora do banho!")
+  imagens/vestir.png        ->  Se vestir          (fala: "Hora de se vestir!")
+  imagens/cafemanha.png     ->  Café da manhã      (fala: "Hora do café da manhã!")
+  imagens/horaBrincar.png   ->  Hora de brincar    (fala: "Hora de brincar!")
+  imagens/escola.png        ->  Ir à escola        (fala: "Hora de ir para a escola!")
+  imagens/licao.png         ->  Fazer lição        (fala: "Hora de fazer a lição de casa!")
+  imagens/dormirRotina.png  ->  Dormir             (fala: "Hora de dormir. Boa noite!")
+
+Total: 40 imagens.

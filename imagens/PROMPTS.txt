@@ -1,0 +1,83 @@
+PROMPTS PARA GERAR AS 40 ILUSTRACOES
+=====================================
+
+IDEIA: cada icone e uma ILUSTRACAO DE UMA CRIANCA FAZENDO A ACAO
+(estilo material didatico), nao um objeto solto.
+Ex.: "escovar dentes" = uma crianca escovando os dentes.
+     "se vestir"       = uma crianca vestindo uma camiseta.
+
+COMO USAR
+1) Num gerador de imagem (IA) ou banco de imagens, use o PROMPT-BASE abaixo
+   + a acao de cada linha.
+2) Salve cada arquivo em  imagens/<codigo>.png
+   (mesmo nome da lista, quadrado, min. 500x500, fundo BRANCO ou TRANSPARENTE).
+3) Recarregue o index.html. Sem arquivo, o botao usa o desenho de reserva.
+
+Para as 40 ficarem iguais: mantenha SEMPRE a mesma descricao da crianca
+(mesmo cabelo, mesma roupa) e, se o gerador permitir, use a mesma "seed".
+
+
+PROMPT-BASE (cole antes da acao)
+--------------------------------
+"Flat vector cartoon illustration for children's educational flashcards.
+The SAME recurring character in every image: a cheerful child around 6 years
+old, short brown hair, warm skin tone, wearing an orange t-shirt with dark
+brown sleeves. Soft cel shading, bold clean outlines, bright friendly colors,
+plain white or transparent background, full body, centered, square 1:1,
+no text. Scene: "
+
+
+LISTA (codigo do arquivo  ->  acao para completar o prompt)
+----------------------------------------------------------
+
+BASICO
+  sim.png            the child smiling and giving a big thumbs up, nodding yes
+  nao.png            the child shaking head no, one hand raised palm forward
+  mais.png           the child holding out an open hand asking for more
+  chega.png          the child holding one hand up firmly meaning "stop, enough"
+  obrigado.png       the child with a hand on the chest, smiling, saying thank you
+  oi.png             the child waving one hand hello, happy
+  tchau.png          the child waving goodbye, turning slightly away
+  naoSei.png         the child shrugging shoulders with both palms up, puzzled
+
+PRECISO
+  agua.png           the child drinking a glass of water
+  comida.png         the child sitting at a table eating a meal from a plate
+  banheiro.png       the child raising a hand, needing to go to the bathroom, toilet door behind
+  brincar.png        the child happily playing with a colorful ball
+  descansar.png      the child lying down resting, head on a pillow
+  silencio.png       the child holding one finger to the lips saying shhh, wanting quiet
+  abraco.png         the child opening both arms wide for a hug
+
+SINTO (rosto e corpo bem expressivos)
+  feliz.png          the child jumping happily, big smile, joyful
+  triste.png         the child looking sad, head down, a single tear
+  raiva.png          the child angry, arms crossed, frowning, eyebrows down
+  medo.png           the child scared, wide eyes, hands near the face, stepping back
+  cansado.png        the child tired, yawning and rubbing one eye
+  calmo.png          the child calm and relaxed, eyes closed, taking a deep breath
+  animado.png        the child excited, both arms up in the air, cheering
+  confuso.png        the child confused, scratching the head, tilted head
+
+AJUDA
+  precisaAjuda.png   the child raising a hand high asking for help
+  naoEntendi.png     the child with a puzzled face and a small shrug, "I don't understand"
+  doiAqui.png        the child wincing and pointing to a spot that hurts, small bandage
+  perdido.png        the child looking lost and looking around, a signpost nearby
+  quaseMae.png       the child reaching up to hug a parent standing beside them
+  precisaAdulto.png  the child looking up and asking a grown-up (teacher) for help
+  ehDificil.png      the child at a desk struggling with a task, frustrated but still trying
+  repetir.png        the child cupping one hand behind the ear asking to repeat
+
+ROTINA
+  acordar.png        the child waking up in bed, stretching arms, morning sun in the window
+  escovar.png        the child brushing their teeth in front of a bathroom mirror
+  banho.png          the child taking a bath in a tub full of bubbles
+  vestir.png         the child getting dressed, pulling a t-shirt over the head
+  cafemanha.png      the child eating breakfast at the table, cereal or toast and juice
+  horaBrincar.png    the child sitting on the floor playing with toys, playtime
+  escola.png         the child walking to school wearing a backpack, school building behind
+  licao.png          the child doing homework at a desk with a notebook and pencil
+  dormirRotina.png   the child sleeping peacefully in bed at night, moon and stars in the window
+
+Total: 40 ilustracoes.

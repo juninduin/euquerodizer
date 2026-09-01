@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Eu Quero Dizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#EAF6FF; --sun:#FFC93C; --coral:#FF6F61; --mint:#3FBFB0;
+    --night:#2B2D5C; --ink:#3A3153; --card:#FFFFFF; --sub:#6C6389;
+    --shadow: 0 6px 0 rgba(58,49,83,0.12);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0;padding:0;height:100%;}
+
+  html.a11y-contrast{
+    --sky:#FFFFFF; --sun:#8A5A00; --coral:#B00020; --mint:#00695C;
+    --night:#000000; --ink:#000000; --card:#FFFFFF; --shadow:0 0 0 2px #000;
+  }
+  html.a11y-contrast body{ background:#FFFFFF; }
+  html.a11y-contrast .card-btn, html.a11y-contrast .tab-btn,
+  html.a11y-contrast .icon-btn, html.a11y-contrast .msg-bar,
+  html.a11y-contrast .overlay-card{ border:3px solid #000 !important; }
+  html.a11y-large-text{ font-size:120%; }
+  html.a11y-reduce-motion *, html.a11y-reduce-motion *::before, html.a11y-reduce-motion *::after{
+    animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;
+  }
+
+  body{
+    font-family:'Baloo 2','Fredoka',-apple-system,'Segoe UI',Roboto,sans-serif;
+    background: radial-gradient(circle at 20% 0%, #FFFDF3 0%, var(--sky) 55%, #DCEFFF 100%);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex; align-items:flex-start; justify-content:center;
+    overflow-x:hidden;
+  }
+  #app{ width:100%; max-width:480px; min-height:100vh; position:relative; padding-bottom:30px; }
+  h1,h2{ font-family:'Fredoka',-apple-system,sans-serif; margin:0; }
+  button{ font-family:inherit; border:none; cursor:pointer; background:none; -webkit-tap-highlight-color:transparent; }
+  button:focus-visible, [tabindex]:focus-visible{ outline:3px solid var(--coral); outline-offset:3px; }
+  svg{ display:block; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px 6px; }
+  .brand{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:.92rem; }
+  .brand-dot{ width:10px; height:10px; border-radius:50%; background:var(--coral); }
+  .icon-btn{
+    width:42px; height:42px; border-radius:50%; background:var(--card); box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:center; color:var(--ink);
+  }
+  .icon-btn:active{ transform:translateY(2px); box-shadow:0 3px 0 rgba(58,49,83,0.12); }
+  .top-actions{ display:flex; gap:8px; }
+
+  /* ---------- MESSAGE BAR ---------- */
+  .msg-bar{
+    margin: 8px 18px 4px; background:var(--card); border-radius:22px; padding:16px 18px;
+    box-shadow:var(--shadow); display:flex; align-items:center; gap:12px; min-height:64px;
+  }
+  .msg-bar .msg-text{
+    flex:1; font-size:1.35rem; font-weight:700; color:var(--ink); line-height:1.2;
+  }
+  .msg-bar .msg-text.placeholder{ color:#B9B2CF; font-weight:600; font-size:1.05rem; }
+  .msg-bar .repeat-btn{
+    width:52px; height:52px; border-radius:50%; background:var(--coral); color:#fff; flex:none;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 5px 0 #C94A3E;
+  }
+  .msg-bar .repeat-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #C94A3E; }
+  .msg-bar .repeat-btn[disabled]{ opacity:.35; box-shadow:none; }
+
+  /* ---------- TABS ---------- */
+  .tabs{ display:flex; gap:10px; margin:14px 18px 16px; }
+  .tab-btn{
+    flex:1; padding:14px 8px; border-radius:18px; font-weight:700; font-size:1.02rem;
+    background:var(--card); color:var(--sub); box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .tab-btn.active{ background:var(--coral); color:#fff; box-shadow:0 6px 0 #C94A3E; }
+  .tab-btn[data-tab="sentimentos"].active{ background:var(--mint); box-shadow:0 6px 0 #2C9689; }
+  .tab-btn[data-tab="rotina"].active{ background:#7F77DD; box-shadow:0 6px 0 #534AB7; }
+  .tab-btn[data-tab="basico"].active{ background:var(--sun); color:#7A5200; box-shadow:0 6px 0 #C99A1F; }
+  .tab-btn[data-tab="ajuda"].active{ background:#F26D6D; box-shadow:0 6px 0 #C2504F; }
+  .tabs{ display:block; margin:14px 18px 16px; }
+  .tabs-row{ display:flex; gap:8px; }
+  .tabs-row + .tabs-row{ margin-top:8px; }
+  .tabs-row .tab-btn{ flex:1; font-size:.86rem; padding:12px 4px; }
+
+  /* ---------- ICON GRID (float layout: robust across browsers) ---------- */
+  .grid{ width:100%; padding:0 18px; }
+  .grid:after{ content:""; display:table; clear:both; }
+  .card-btn{
+    float:left; width:47%; margin-right:6%; margin-bottom:16px;
+    border-radius:24px; padding:16px 10px 14px; text-align:center;
+    box-shadow:var(--shadow); transition:transform .1s ease;
+  }
+  .card-btn:nth-child(2n){ margin-right:0; }
+  .card-btn:active{ transform:scale(0.96) translateY(2px); }
+  .card-btn .icon-wrap{
+    width:78px; height:78px; margin:0 auto 10px; padding:7px;
+    background:#FFFFFF; border-radius:50%; box-shadow:0 3px 0 rgba(58,49,83,0.10);
+    overflow:hidden;
+  }
+  .card-btn .icon-wrap svg{ width:100%; height:100%; }
+  .card-btn .icon-wrap img{ width:100%; height:100%; object-fit:contain; display:block; }
+  /* Ilustração: sem bola/moldura, imagem solta e maior */
+  .card-btn .icon-wrap.has-photo{
+    width:112px; height:112px; padding:0; margin-bottom:4px;
+    background:none; border-radius:0; box-shadow:none; overflow:visible;
+  }
+  .card-btn .label{ font-size:1.05rem; font-weight:700; color:var(--ink); }
+  html.a11y-contrast .card-btn .icon-wrap:not(.has-photo){ border:2px solid #000; box-shadow:none; }
+
+  /* ---------- RECENT LOG ---------- */
+  .log-section{ margin:22px 18px 0; }
+  .log-title{ font-size:.85rem; font-weight:700; color:#A79FC2; text-transform:uppercase; letter-spacing:.04em; margin-bottom:10px; }
+  .log-empty{ font-size:.92rem; color:#B9B2CF; font-weight:500; }
+  .log-item{
+    display:flex; align-items:center; gap:10px; background:var(--card); border-radius:16px;
+    padding:10px 14px; margin-bottom:8px; box-shadow:0 3px 0 rgba(58,49,83,0.08);
+  }
+  .log-item .dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+  .log-item .txt{ font-size:.95rem; font-weight:600; color:var(--ink); flex:1; }
+  .log-item .time{ font-size:.78rem; color:#B9B2CF; font-weight:600; flex:none; }
+
+  /* ---------- ACCESSIBILITY PANEL ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(43,45,92,0.55);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:24px;
+  }
+  .overlay.show{ display:flex; }
+  .overlay-card{
+    background:var(--card); border-radius:28px; padding:30px 26px 26px;
+    max-width:360px; width:100%; text-align:left; box-shadow:0 14px 0 rgba(43,45,92,0.2);
+  }
+  .overlay-card h2{ font-size:1.4rem; margin-bottom:4px; }
+  .a11y-intro{ font-size:.9rem; color:var(--sub); font-weight:500; margin:0 0 18px; }
+  .a11y-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-top:1px solid #EFEAF7; }
+  .a11y-row:first-of-type{ border-top:none; }
+  .a11y-row-label{ font-weight:600; font-size:.98rem; }
+  .a11y-row-desc{ font-size:.8rem; color:#8B84A3; font-weight:500; margin-top:2px; }
+  .switch{ position:relative; display:inline-block; width:46px; height:26px; flex:none; }
+  .switch input{ opacity:0; width:0; height:0; position:absolute; }
+  .switch .slider{ position:absolute; top:0;left:0;right:0;bottom:0; background:#DCD5EC; border-radius:26px; transition:.2s; }
+  .switch .slider:before{ content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
+  .switch input:checked + .slider{ background:var(--coral); }
+  .switch input:checked + .slider:before{ transform:translateX(20px); }
+  .big-btn{ background:var(--coral); color:#fff; font-weight:700; font-size:1.05rem; padding:14px 28px; border-radius:999px; width:100%; box-shadow:0 6px 0 #C94A3E; margin-top:14px; }
+  .big-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #C94A3E; }
+
+  .history-card{ max-height:80vh; overflow-y:auto; }
+  .day-row{ padding:12px 0; border-top:1px solid #EFEAF7; }
+  .day-row:first-child{ border-top:none; }
+  .day-row .day-label{ font-size:.92rem; font-weight:700; color:var(--ink); margin-bottom:8px; }
+  .day-row .day-label.today{ color:var(--coral); }
+  .day-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .day-chip{
+    display:flex; align-items:center; gap:5px; background:#F3EFFB; border-radius:999px;
+    padding:4px 10px 4px 4px; font-size:.82rem; font-weight:600; color:var(--ink);
+  }
+  .day-chip .mini-icon{ width:22px; height:22px; flex:none; }
+  .day-empty{ font-size:.85rem; color:#B9B2CF; font-weight:500; font-style:italic; }
+  .clear-btn{
+    display:block; width:100%; text-align:center; margin-top:10px; padding:10px;
+    font-size:.85rem; color:#B9807A; font-weight:600; background:none;
+  }
+
+  .info-row{ padding:12px 0; border-top:1px solid #EFEAF7; }
+  .info-row:first-of-type{ border-top:none; }
+  .info-label{ font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#A79FC2; margin-bottom:4px; }
+  .info-value{ font-size:.95rem; font-weight:600; color:var(--ink); line-height:1.4; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; } }
+
+  /* ---------- TELA INICIAL ---------- */
+  .splash{
+    position:fixed; inset:0; z-index:200;
+    background: radial-gradient(circle at 20% 0%, #FFFDF3 0%, var(--sky) 55%, #DCEFFF 100%);
+    display:flex; align-items:center; justify-content:center; padding:32px;
+    transition:opacity .45s ease, visibility .45s ease;
+  }
+  .splash.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  .splash-inner{ text-align:center; max-width:420px; width:100%; }
+  .splash-logo{ width:160px; height:160px; margin:0 auto 12px; animation:splash-bob 2.4s ease-in-out infinite; }
+  .splash-name{ font-size:1.05rem; font-weight:700; color:var(--sub); letter-spacing:.02em; margin-bottom:6px; }
+  .splash-title{
+    font-family:'Fredoka',-apple-system,sans-serif; font-size:2.6rem; font-weight:700; color:var(--night);
+    line-height:1.05; margin:0 0 32px; text-shadow:0 4px 0 rgba(43,45,92,0.12);
+  }
+  .start-btn{
+    display:inline-flex; align-items:center; gap:12px;
+    background:var(--coral); color:#fff; font-weight:800; font-size:1.5rem;
+    padding:18px 46px; border-radius:999px; box-shadow:0 8px 0 #C94A3E;
+    animation:splash-pulse 1.8s ease-in-out infinite;
+  }
+  .start-btn:active{ transform:translateY(5px); box-shadow:0 3px 0 #C94A3E; animation:none; }
+  .start-btn svg{ width:26px; height:26px; }
+  @keyframes splash-bob{ 0%,100%{ transform:translateY(0) rotate(-2deg); } 50%{ transform:translateY(-12px) rotate(2deg); } }
+  @keyframes splash-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.04); } }
+  html.a11y-contrast .splash{ background:#FFFFFF; }
+  html.a11y-contrast .start-btn{ border:3px solid #000; }
+  html.a11y-reduce-motion .splash-logo, html.a11y-reduce-motion .start-btn{ animation:none; }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash" role="dialog" aria-modal="true" aria-label="Tela inicial do jogo Eu Quero Dizer">
+  <div class="splash-inner">
+    <div class="splash-logo">
+      <svg viewBox="0 0 200 200" width="160" height="160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g stroke="#FFC93C" stroke-width="8" stroke-linecap="round">
+          <line x1="100" y1="12" x2="100" y2="32"/>
+          <line x1="28" y1="38" x2="43" y2="53"/>
+          <line x1="172" y1="38" x2="157" y2="53"/>
+          <line x1="12" y1="104" x2="34" y2="104"/>
+          <line x1="188" y1="104" x2="166" y2="104"/>
+        </g>
+        <path d="M40 40 h118 a22 22 0 0 1 22 22 v66 a22 22 0 0 1 -22 22 h-66 l-30 26 v-26 h-2 a22 22 0 0 1 -22 -22 v-66 a22 22 0 0 1 22 -22 Z"
+              fill="#FF6F61" stroke="#C94A3E" stroke-width="6" stroke-linejoin="round"/>
+        <circle cx="78" cy="92" r="8" fill="#FFFFFF"/>
+        <circle cx="122" cy="92" r="8" fill="#FFFFFF"/>
+        <path d="M74 112 q26 26 52 0" stroke="#FFFFFF" stroke-width="9" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="splash-name">VAMOS JOGAR!</div>
+    <h1 class="splash-title">EU QUERO DIZER</h1>
+    <button class="start-btn" id="startBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      INICIAR
+    </button>
+  </div>
+</div>
+
+<div id="app" aria-hidden="true">
+
+  <div class="topbar">
+    <div class="brand"><span class="brand-dot" aria-hidden="true"></span> Eu Quero Dizer</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="infoBtn" aria-label="Sobre o projeto" title="Sobre o projeto">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/><circle cx="12" cy="7.5" r="0.6" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="icon-btn" id="historyBtn" aria-label="Ver histórico da semana" title="Histórico da semana">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+      </button>
+      <button class="icon-btn" id="readScreenBtn" aria-label="Ouvir esta tela" title="Ouvir esta tela">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16.5 12a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z"/></svg>
+      </button>
+      <button class="icon-btn" id="a11yBtn" aria-label="Configurações de acessibilidade" title="Acessibilidade">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="msg-bar">
+    <div class="msg-text placeholder" id="msgText">Toque num ícone para falar…</div>
+    <button class="repeat-btn" id="repeatBtn" aria-label="Repetir a última frase" disabled>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3z"/><path d="M16.5 12a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z"/></svg>
+    </button>
+  </div>
+
+  <div class="tabs">
+    <div class="tabs-row">
+      <button class="tab-btn active" data-tab="basico" id="tabBasico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        Básico
+      </button>
+      <button class="tab-btn" data-tab="sentimentos" id="tabSentimentos">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M8 15s1.5 2 4 2 4-2 4-2"/></svg>
+        Sinto
+      </button>
+      <button class="tab-btn" data-tab="ajuda" id="tabAjuda">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+        Ajuda
+      </button>
+    </div>
+    <div class="tabs-row">
+      <button class="tab-btn" data-tab="necessidades" id="tabNecessidades">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.35-9.5-8.5C.7 8.8 2.3 5 6 5c2 0 3.3 1.1 4 2.2C10.7 6.1 12 5 14 5c3.7 0 5.3 3.8 3.5 7.5C15 16.65 12 21 12 21z"/></svg>
+        Preciso
+      </button>
+      <button class="tab-btn" data-tab="rotina" id="tabRotina">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+        Rotina
+      </button>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="log-section">
+    <div class="log-title">Últimas mensagens</div>
+    <div id="logList"><div class="log-empty">Nada foi dito ainda hoje.</div></div>
+  </div>
+
+</div>
+
+<!-- Painel sobre o projeto -->
+<div class="overlay" id="infoOverlay" role="dialog" aria-label="Sobre o projeto">
+  <div class="overlay-card">
+    <h2>Sobre o projeto 🔬</h2>
+    <div class="info-row">
+      <div class="info-label">Subtema</div>
+      <div class="info-value">Acessibilidade intelectual: imagens que ajudam a falar</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">Título do experimento</div>
+      <div class="info-value">Eu Quero Dizer: toque na imagem e escute!</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">Objetivo</div>
+      <div class="info-value">Criar e testar uma prancha digital com imagens e sons para ajudar crianças a mostrarem o que precisam e como estão se sentindo.</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">Área</div>
+      <div class="info-value">Tecnologia e acessibilidade</div>
+    </div>
+    <button class="big-btn" id="closeInfoBtn">Fechar</button>
+  </div>
+</div>
+
+<!-- Painel de acessibilidade -->
+<div class="overlay" id="a11yOverlay" role="dialog" aria-label="Configurações de acessibilidade">
+  <div class="overlay-card">
+    <h2>Acessibilidade ⚙️</h2>
+    <p class="a11y-intro">Ajuste como o app aparece e soa.</p>
+    <div class="a11y-row">
+      <div><div class="a11y-row-label">Alto contraste</div><div class="a11y-row-desc">Cores fortes e bordas pretas</div></div>
+      <label class="switch"><input type="checkbox" id="toggleContrast"><span class="slider"></span></label>
+    </div>
+    <div class="a11y-row">
+      <div><div class="a11y-row-label">Texto maior</div><div class="a11y-row-desc">Aumenta o tamanho das letras</div></div>
+      <label class="switch"><input type="checkbox" id="toggleLargeText"><span class="slider"></span></label>
+    </div>
+    <div class="a11y-row">
+      <div><div class="a11y-row-label">Reduzir animações</div><div class="a11y-row-desc">Menos movimento na tela</div></div>
+      <label class="switch"><input type="checkbox" id="toggleReduceMotion"><span class="slider"></span></label>
+    </div>
+    <button class="big-btn" id="closeA11yBtn">Fechar</button>
+  </div>
+</div>
+
+<!-- Painel de histórico semanal -->
+<div class="overlay" id="historyOverlay" role="dialog" aria-label="Histórico da semana">
+  <div class="overlay-card history-card">
+    <h2>Como foi a semana? 📅</h2>
+    <p class="a11y-intro">Os sentimentos tocados em cada dia ficam guardados aqui, só neste aparelho.</p>
+    <div id="weekList"></div>
+    <button class="big-btn" id="closeHistoryBtn">Fechar</button>
+    <button class="clear-btn" id="clearHistoryBtn">Apagar histórico</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     ÍCONES (SVG simples, 100x100)
+     ============================================================ */
+  function svgIcon(inner){
+    return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+inner+'</svg>';
+  }
+
+  /* Ícones em estilo "desenho infantil": traço grosso, cores vivas,
+     formas grandes e rostos expressivos para a criança reconhecer rápido. */
+  var ICONS = {
+
+    /* ---------- BÁSICO ---------- */
+    sim: svgIcon(
+      '<circle cx="50" cy="50" r="41" fill="#C9F0DA"/>'
+      + '<rect x="17" y="49" width="19" height="33" rx="7" fill="#7FCBE8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M36 49c5-1 7-6 9-13 2-7 3-13 9-13 5 0 6 7 4 13l-2 7h15a8 8 0 0 1 8 9l-3 16a8 8 0 0 1-8 7H40a4 4 0 0 1-4-4Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M52 55h18M52 64h16M52 72h14" stroke="#4A3B32" stroke-width="2.3" opacity="0.4"/>'
+    ),
+    nao: svgIcon(
+      '<circle cx="50" cy="50" r="41" fill="#FFD6CD"/>'
+      + '<g transform="rotate(180 50 50)">'
+      + '<rect x="17" y="49" width="19" height="33" rx="7" fill="#F2917F" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M36 49c5-1 7-6 9-13 2-7 3-13 9-13 5 0 6 7 4 13l-2 7h15a8 8 0 0 1 8 9l-3 16a8 8 0 0 1-8 7H40a4 4 0 0 1-4-4Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M52 55h18M52 64h16M52 72h14" stroke="#4A3B32" stroke-width="2.3" opacity="0.4"/>'
+      + '</g>'
+    ),
+    mais: svgIcon(
+      '<rect x="23" y="57" width="42" height="21" rx="6" fill="#8FD3E8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<rect x="29" y="39" width="31" height="20" rx="6" fill="#FFC93C" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<rect x="35" y="22" width="22" height="19" rx="6" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="72" cy="30" r="15" fill="#3FA45E" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M72 23v14M65 30h14" stroke="#fff" stroke-width="4.6"/>'
+    ),
+    chega: svgIcon(
+      '<path d="M31 14h38l17 17v38l-17 17h-38l-17-17v-38Z" fill="#F2555A" stroke="#B23A3E" stroke-width="4"/>'
+      + '<rect x="34" y="46" width="34" height="30" rx="13" fill="#FFE7C6" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<g fill="#FFE7C6" stroke="#4A3B32" stroke-width="3">'
+      + '<rect x="35" y="30" width="8.5" height="22" rx="4.25"/>'
+      + '<rect x="44.5" y="24" width="8.5" height="28" rx="4.25"/>'
+      + '<rect x="54" y="26" width="8.5" height="26" rx="4.25"/>'
+      + '<rect x="63" y="31" width="8.5" height="21" rx="4.25"/>'
+      + '</g>'
+      + '<path d="M35 55c-6-2-11 2-9 8" fill="none" stroke="#4A3B32" stroke-width="3"/>'
+    ),
+    obrigado: svgIcon(
+      '<circle cx="50" cy="50" r="41" fill="#FFDCE0"/>'
+      + '<path d="M50 33c-7-13-28-9-28 8 0 14 17 23 28 31 11-8 28-17 28-31 0-17-21-21-28-8Z" fill="#FF5D73" stroke="#B23A4A" stroke-width="3.4"/>'
+      + '<path d="M40 45c-3 2-5 5-5 9" fill="none" stroke="#fff" stroke-width="3" opacity="0.6"/>'
+      + '<path d="M16 56c-4 0-7 4-6 10 2 8 9 15 18 17 4 1 8 0 10-3-7-6-14-14-16-21-1-2-3-3-6-3Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M84 56c4 0 7 4 6 10-2 8-9 15-18 17-4 1-8 0-10-3 7-6 14-14 16-21 1-2 3-3 6-3Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+    ),
+    oi: svgIcon(
+      '<circle cx="50" cy="50" r="41" fill="#FFF3CC"/>'
+      + '<circle cx="46" cy="54" r="23" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<circle cx="39" cy="52" r="3" fill="#4A3B32"/><circle cx="53" cy="52" r="3" fill="#4A3B32"/>'
+      + '<circle cx="33" cy="60" r="4" fill="#FF9E9E" opacity="0.6"/>'
+      + '<path d="M38 62q8 7 16 0" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M64 30c-3 0-6 3-6 8 0 8 4 16 12 18 6 1 10-3 9-9-1-4-3-6-3-9 0-4-2-7-6-7Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<g stroke="#FFB03A" stroke-width="3.4" fill="none"><path d="M78 18q6 4 6 10"/><path d="M83 12q9 6 9 18"/></g>'
+    ),
+    tchau: svgIcon(
+      '<circle cx="50" cy="50" r="41" fill="#DCEFFF"/>'
+      + '<g transform="rotate(12 50 55)">'
+      + '<rect x="40" y="40" width="26" height="30" rx="12" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<g fill="#FFD9A8" stroke="#4A3B32" stroke-width="3">'
+      + '<rect x="40" y="24" width="8" height="20" rx="4"/>'
+      + '<rect x="48" y="20" width="8" height="24" rx="4"/>'
+      + '<rect x="56" y="22" width="8" height="22" rx="4"/>'
+      + '<rect x="63" y="27" width="8" height="18" rx="4"/>'
+      + '</g>'
+      + '<rect x="44" y="66" width="18" height="16" rx="6" fill="#7FCBE8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '</g>'
+      + '<g stroke="#6FB0D8" stroke-width="3.6" fill="none"><path d="M20 30q-4 6 0 12"/><path d="M14 26q-6 9 0 20"/></g>'
+    ),
+    naoSei: svgIcon(
+      '<circle cx="50" cy="46" r="22" fill="#F0EAFB" stroke="#7F77DD" stroke-width="3.4"/>'
+      + '<circle cx="42" cy="44" r="3" fill="#4A3B32"/><circle cx="58" cy="44" r="3" fill="#4A3B32"/>'
+      + '<path d="M42 56h16" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M24 60q-8 2-9 12M76 60q8 2 9 12" fill="none" stroke="#4A3B32" stroke-width="6"/>'
+      + '<path d="M20 74q-6 0-8 5M80 74q6 0 8 5" fill="none" stroke="#FFD9A8" stroke-width="7"/>'
+      + '<text x="50" y="30" font-family="Arial" font-size="20" font-weight="700" fill="#7F77DD" text-anchor="middle">?</text>'
+    ),
+
+    /* ---------- PRECISO ---------- */
+    agua: svgIcon(
+      '<path d="M30 26h40l-4 54a6 6 0 0 1-6 6H40a6 6 0 0 1-6-6Z" fill="#E9F7FF" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M34 50h32l-3 30a5 5 0 0 1-5 5H42a5 5 0 0 1-5-5Z" fill="#7FD1EC"/>'
+      + '<path d="M34 50c6 4 10-4 16 0s10 4 16 0" fill="none" stroke="#4A3B32" stroke-width="2.4" opacity="0.35"/>'
+      + '<rect x="54" y="14" width="7" height="44" rx="3.5" transform="rotate(12 57 36)" fill="#FF9E9E" stroke="#4A3B32" stroke-width="2.6"/>'
+      + '<circle cx="45" cy="63" r="3" fill="#fff"/><circle cx="56" cy="72" r="2.3" fill="#fff"/>'
+      + '<circle cx="44" cy="67" r="2" fill="#4A3B32"/><circle cx="56" cy="67" r="2" fill="#4A3B32"/>'
+      + '<path d="M46 73q4 4 8 0" fill="none" stroke="#4A3B32" stroke-width="2.4"/>'
+    ),
+    comida: svgIcon(
+      '<ellipse cx="50" cy="62" rx="36" ry="15" fill="#fff" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<ellipse cx="50" cy="59" rx="27" ry="10" fill="#FFF1DC"/>'
+      + '<path d="M32 46q18-9 36 0l-3 8H35Z" fill="#FFE3A3" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M35 54h30l3 6H32Z" fill="#F4B860" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M40 50h16" stroke="#7FBF5B" stroke-width="3"/>'
+      + '<circle cx="46" cy="44" r="4" fill="#FF6F61"/>'
+      + '<path d="M14 30v22M11 30v9a4 4 0 0 0 6 0V30" fill="none" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M86 30c-4 0-6 6-6 12s6 4 6 4v16" fill="none" stroke="#4A3B32" stroke-width="2.8"/>'
+    ),
+    banheiro: svgIcon(
+      '<path d="M26 28h34v12a18 18 0 0 1-18 18h-2a14 14 0 0 1-14-14Z" fill="#E9F4FF" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<ellipse cx="41" cy="40" rx="9" ry="6" fill="#BFE0F2" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<path d="M38 58l-4 20a5 5 0 0 0 5 6h10a5 5 0 0 0 5-5l3-15" fill="#F4FAFF" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<rect x="62" y="20" width="16" height="30" rx="4" fill="#DDEFFB" stroke="#4A3B32" stroke-width="3"/>'
+      + '<rect x="67" y="15" width="6" height="8" rx="2" fill="#8FD3E8" stroke="#4A3B32" stroke-width="2.4"/>'
+    ),
+    brincar: svgIcon(
+      '<circle cx="46" cy="52" r="26" fill="#fff"/>'
+      + '<path d="M46 26a26 26 0 0 1 24 16H52Z" fill="#FF6F61"/>'
+      + '<path d="M20 44a26 26 0 0 1 13-15l13 23Z" fill="#FFC93C"/>'
+      + '<path d="M24 70a26 26 0 0 0 40 2L46 52Z" fill="#8FD3E8"/>'
+      + '<circle cx="46" cy="52" r="26" fill="none" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M78 72l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#FFD23F" stroke="#4A3B32" stroke-width="2.2"/>'
+      + '<path d="M18 80q4-4 10-3M74 30q2-5 8-6" fill="none" stroke="#4A3B32" stroke-width="2.6" opacity="0.5"/>'
+    ),
+    descansar: svgIcon(
+      '<path d="M14 44h30a10 10 0 0 1 0 20H14Z" fill="#EDEBFF" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<rect x="10" y="60" width="76" height="20" rx="6" fill="#9A9DE0" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M10 68h76" stroke="#4A3B32" stroke-width="2.4" opacity="0.4"/>'
+      + '<rect x="40" y="52" width="46" height="14" rx="6" fill="#C9CBF2" stroke="#4A3B32" stroke-width="3"/>'
+      + '<text x="58" y="40" font-family="Arial" font-size="18" font-weight="700" fill="#7C7FC7">Z</text>'
+      + '<text x="72" y="28" font-family="Arial" font-size="13" font-weight="700" fill="#7C7FC7">z</text>'
+    ),
+    silencio: svgIcon(
+      '<circle cx="50" cy="50" r="34" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M30 40q6-5 12-1M58 39q6-5 12 0" fill="none" stroke="#4A3B32" stroke-width="3"/>'
+      + '<circle cx="40" cy="50" r="3.2" fill="#4A3B32"/><circle cx="60" cy="50" r="3.2" fill="#4A3B32"/>'
+      + '<path d="M44 64h12" stroke="#4A3B32" stroke-width="3"/>'
+      + '<rect x="46" y="56" width="8" height="30" rx="4" fill="#FFE3C0" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M70 24l14-6M72 34l15-1" stroke="#B9B2CF" stroke-width="4"/>'
+    ),
+    abraco: svgIcon(
+      '<circle cx="50" cy="46" r="40" fill="#FFDCE0"/>'
+      + '<circle cx="38" cy="40" r="12" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M20 82c0-16 8-26 18-26 6 0 11 4 14 10" fill="#8FD3E8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="63" cy="40" r="12" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M80 82c0-16-8-26-18-26-6 0-11 4-14 10" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M30 52c14 8 26 8 40 0" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M50 16c-2-4-9-3-9 2 0 5 6 8 9 10 3-2 9-5 9-10 0-5-7-6-9-2Z" fill="#FF5D73" stroke="#B23A4A" stroke-width="2.4"/>'
+    ),
+
+    /* ---------- SINTO ---------- */
+    feliz: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#FFD23F" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M30 46a7 7 0 0 1 14 0M56 46a7 7 0 0 1 14 0" fill="none" stroke="#4A3B32" stroke-width="4"/>'
+      + '<circle cx="28" cy="58" r="6" fill="#FF8FA3" opacity="0.65"/><circle cx="72" cy="58" r="6" fill="#FF8FA3" opacity="0.65"/>'
+      + '<path d="M33 58q17 20 34 0a3 3 0 0 0-3-4H36a3 3 0 0 0-3 4Z" fill="#4A3B32"/>'
+      + '<path d="M40 65q10 7 20 0" fill="#FF6F8B"/>'
+    ),
+    triste: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#9BD4F0" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M30 40q7-6 14-1M56 39q7-5 14 1" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="38" cy="49" r="3.6" fill="#4A3B32"/><circle cx="62" cy="49" r="3.6" fill="#4A3B32"/>'
+      + '<path d="M36 70q14-14 28 0" fill="none" stroke="#4A3B32" stroke-width="4"/>'
+      + '<path d="M38 55c-3 5-5 9-5 13a5 5 0 0 0 10 0c0-4-2-8-5-13Z" fill="#7FC7EC" stroke="#4A3B32" stroke-width="2.4"/>'
+    ),
+    raiva: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#FF7B6B" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M30 38l16 8M70 38l-16 8" stroke="#4A3B32" stroke-width="4.2"/>'
+      + '<circle cx="39" cy="52" r="3.8" fill="#4A3B32"/><circle cx="61" cy="52" r="3.8" fill="#4A3B32"/>'
+      + '<path d="M36 70q14-10 28 0" fill="none" stroke="#4A3B32" stroke-width="4"/>'
+      + '<path d="M22 30c-4-4-3-9 0-12M30 24c-3-4-2-8 1-11M78 30c4-4 3-9 0-12M70 24c3-4 2-8-1-11" fill="none" stroke="#F2555A" stroke-width="3.4"/>'
+    ),
+    medo: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#EAF6FF" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<circle cx="40" cy="48" r="7" fill="#fff" stroke="#4A3B32" stroke-width="3"/><circle cx="40" cy="49" r="3" fill="#4A3B32"/>'
+      + '<circle cx="60" cy="48" r="7" fill="#fff" stroke="#4A3B32" stroke-width="3"/><circle cx="60" cy="49" r="3" fill="#4A3B32"/>'
+      + '<ellipse cx="50" cy="68" rx="7" ry="9" fill="#4A3B32"/>'
+      + '<path d="M20 44q8 6 8 20M80 44q-8 6-8 20" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M76 30c-3 3-3 8 0 11 3-3 3-8 0-11Z" fill="#7FD1EC" stroke="#4A3B32" stroke-width="2"/>'
+      + '<path d="M28 26q6-5 12-1M60 25q6-5 12 1" fill="none" stroke="#4A3B32" stroke-width="3"/>'
+    ),
+    cansado: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#FFE0B0" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M32 46q7 5 14 0M54 46q7 5 14 0" fill="none" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<ellipse cx="50" cy="66" rx="9" ry="11" fill="#4A3B32"/>'
+      + '<text x="64" y="30" font-family="Arial" font-size="16" font-weight="700" fill="#B58A5B">z</text>'
+      + '<text x="75" y="20" font-family="Arial" font-size="11" font-weight="700" fill="#B58A5B">z</text>'
+    ),
+    calmo: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#BFE8D6" stroke="#3FA47E" stroke-width="3.6"/>'
+      + '<path d="M32 48q7 6 14 0M54 48q7 6 14 0" fill="none" stroke="#3A6B58" stroke-width="3.4"/>'
+      + '<circle cx="30" cy="58" r="5" fill="#8FD3B8" opacity="0.8"/><circle cx="70" cy="58" r="5" fill="#8FD3B8" opacity="0.8"/>'
+      + '<path d="M38 62q12 10 24 0" fill="none" stroke="#3A6B58" stroke-width="3.6"/>'
+    ),
+    animado: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#FFE04D" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M38 39l2 5 5 1-4 4 1 5-4-2-4 2 1-5-4-4 5-1Z" fill="#4A3B32"/>'
+      + '<path d="M62 39l2 5 5 1-4 4 1 5-4-2-4 2 1-5-4-4 5-1Z" fill="#4A3B32"/>'
+      + '<path d="M34 58q16 18 32 0a3 3 0 0 0-3-4H37a3 3 0 0 0-3 4Z" fill="#4A3B32"/>'
+      + '<path d="M42 64q8 6 16 0" fill="#FF6F8B"/>'
+      + '<circle cx="16" cy="26" r="3" fill="#FF6F61"/><circle cx="86" cy="30" r="3" fill="#3FBFB0"/>'
+      + '<rect x="80" y="60" width="6" height="6" fill="#7F77DD" transform="rotate(20 83 63)"/><rect x="14" y="58" width="6" height="6" fill="#FFC93C" transform="rotate(15 17 61)"/>'
+    ),
+    confuso: svgIcon(
+      '<g transform="rotate(-8 50 50)">'
+      + '<circle cx="50" cy="50" r="36" fill="#DAD0F5" stroke="#7F77DD" stroke-width="3.6"/>'
+      + '<path d="M30 38q7-7 14 0" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M56 42q7 2 14-3" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="38" cy="50" r="3.6" fill="#4A3B32"/><circle cx="63" cy="50" r="3.6" fill="#4A3B32"/>'
+      + '<path d="M36 66q7-6 14 0 7 6 14 0" fill="none" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '</g>'
+      + '<text x="72" y="28" font-family="Arial" font-size="20" font-weight="700" fill="#7F77DD">?</text>'
+    ),
+
+    /* ---------- AJUDA ---------- */
+    precisaAjuda: svgIcon(
+      '<circle cx="50" cy="50" r="40" fill="#FFE3DD"/>'
+      + '<circle cx="44" cy="70" r="14" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M40 68V34a5 5 0 0 1 10 0v32" fill="#8FD3E8" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<g fill="#FFD9A8" stroke="#4A3B32" stroke-width="2.8">'
+      + '<rect x="38" y="18" width="6" height="16" rx="3"/><rect x="45" y="14" width="6" height="20" rx="3"/>'
+      + '<rect x="52" y="16" width="6" height="18" rx="3"/><rect x="59" y="20" width="6" height="14" rx="3"/>'
+      + '</g>'
+      + '<circle cx="71" cy="32" r="13" fill="#fff" stroke="#F2555A" stroke-width="3"/>'
+      + '<path d="M71 26v7" stroke="#F2555A" stroke-width="3.6"/><circle cx="71" cy="38" r="2.2" fill="#F2555A"/>'
+    ),
+    naoEntendi: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#E4DBF7" stroke="#7F77DD" stroke-width="3.6"/>'
+      + '<circle cx="40" cy="50" r="3.6" fill="#4A3B32"/><circle cx="60" cy="50" r="3.6" fill="#4A3B32"/>'
+      + '<path d="M30 40q7-6 13-1M57 39q7-5 13 1" fill="none" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M38 66q7-6 14 0 7 6 14 0" fill="none" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M68 22c9-2 15 5 12 13" fill="none" stroke="#FFD9A8" stroke-width="7"/>'
+      + '<text x="16" y="34" font-family="Arial" font-size="20" font-weight="700" fill="#7F77DD">?</text>'
+    ),
+    doiAqui: svgIcon(
+      '<circle cx="50" cy="50" r="36" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M32 44q7-4 14 0M54 44q7-4 14 0" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M38 66q12-6 24 0" fill="none" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<g transform="rotate(-20 60 34)"><rect x="44" y="26" width="32" height="14" rx="7" fill="#FFB4A8" stroke="#4A3B32" stroke-width="2.6"/><circle cx="60" cy="33" r="4" fill="#F2917F"/><path d="M55 33h10M60 28v10" stroke="#fff" stroke-width="1.6"/></g>'
+      + '<path d="M18 30l-6-4M20 38h-8M22 46l-7 4" stroke="#F2555A" stroke-width="3"/>'
+    ),
+    perdido: svgIcon(
+      '<path d="M48 30v54" stroke="#B58A5B" stroke-width="6"/>'
+      + '<path d="M48 34h22l6 6-6 6H48Z" fill="#FFC93C" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M48 48H26l-6 6 6 6h22Z" fill="#8FD3E8" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<circle cx="70" cy="66" r="9" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M58 88c0-12 6-18 12-18s12 6 12 18" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3"/>'
+      + '<text x="16" y="26" font-family="Arial" font-size="20" font-weight="700" fill="#F2555A">?</text>'
+    ),
+    quaseMae: svgIcon(
+      '<circle cx="35" cy="30" r="13" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M16 84c0-24 8-40 19-40s19 16 19 40Z" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3"/>'
+      + '<circle cx="68" cy="50" r="10" fill="#FFD9A8" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M54 86c0-16 6-26 14-26s14 10 14 26Z" fill="#8FD3E8" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M46 66q9 4 16 0" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M50 14c-2-4-9-3-9 2 0 5 6 8 9 10 3-2 9-5 9-10 0-5-7-6-9-2Z" fill="#FF5D73" stroke="#B23A4A" stroke-width="2.2"/>'
+    ),
+    precisaAdulto: svgIcon(
+      '<circle cx="42" cy="26" r="13" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M20 86c0-26 10-44 22-44s22 18 22 44Z" fill="#7FB5E8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M42 58l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z" fill="#FFD23F" stroke="#4A3B32" stroke-width="2"/>'
+      + '<circle cx="76" cy="58" r="9" fill="#FFD9A8" stroke="#4A3B32" stroke-width="2.8"/>'
+      + '<path d="M64 88c0-16 5-24 12-24s12 8 12 24Z" fill="#FF9E9E" stroke="#4A3B32" stroke-width="2.8"/>'
+    ),
+    ehDificil: svgIcon(
+      '<rect x="44" y="40" width="40" height="40" rx="6" fill="#E7B76B" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M44 52h40M60 40v40" stroke="#4A3B32" stroke-width="2.4" opacity="0.4"/>'
+      + '<circle cx="26" cy="40" r="10" fill="#FFD9A8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M12 78c0-16 6-26 16-26 6 0 10 4 13 10l-6 6" fill="#8FD3E8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M30 46l12 8" stroke="#4A3B32" stroke-width="3"/>'
+      + '<path d="M30 24c-3 3-3 7 0 10 3-3 3-7 0-10Z" fill="#7FD1EC" stroke="#4A3B32" stroke-width="1.8"/>'
+      + '<path d="M84 74l6 4M84 80l6 1" stroke="#4A3B32" stroke-width="2.6" opacity="0.5"/>'
+    ),
+    repetir: svgIcon(
+      '<path d="M30 40a24 24 0 0 1 40-6" fill="none" stroke="#5CA5C7" stroke-width="7"/>'
+      + '<path d="M70 20v16H54Z" fill="#5CA5C7"/>'
+      + '<path d="M70 60a24 24 0 0 1-40 6" fill="none" stroke="#5CA5C7" stroke-width="7"/>'
+      + '<path d="M30 80V64h16Z" fill="#5CA5C7"/>'
+      + '<path d="M80 42q6 8 0 16" fill="none" stroke="#FFB03A" stroke-width="4"/>'
+    ),
+
+    /* ---------- ROTINA ---------- */
+    acordar: svgIcon(
+      '<circle cx="50" cy="56" r="26" fill="#FFE04D" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<circle cx="50" cy="56" r="19" fill="#FFF6D6"/>'
+      + '<path d="M50 44v13l9 6" fill="none" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M26 32l-10-8M74 32l10-8" stroke="#4A3B32" stroke-width="3.6"/>'
+      + '<path d="M22 30a10 10 0 0 1 14-14M78 30a10 10 0 0 0-14-14" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M40 84l-4 8M60 84l4 8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M12 52q-4 4 0 8M88 52q4 4 0 8" fill="none" stroke="#FFB03A" stroke-width="3.4"/>'
+    ),
+    escovar: svgIcon(
+      '<path d="M50 24c-12-10-32-4-32 16 0 12 4 18 8 30 3 9 12 8 13-2 1-8 3-12 11-12s10 4 11 12c1 10 10 11 13 2 4-12 8-18 8-30 0-20-20-26-32-16Z" fill="#fff" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<circle cx="42" cy="44" r="2.6" fill="#4A3B32"/><circle cx="58" cy="44" r="2.6" fill="#4A3B32"/>'
+      + '<path d="M44 52q6 5 12 0" fill="none" stroke="#4A3B32" stroke-width="2.6"/>'
+      + '<g transform="rotate(35 66 60)"><rect x="60" y="58" width="10" height="30" rx="5" fill="#FF9E9E" stroke="#4A3B32" stroke-width="2.8"/><rect x="58" y="46" width="14" height="14" rx="4" fill="#8FD3E8" stroke="#4A3B32" stroke-width="2.8"/><path d="M60 46c4-6 8-6 12 0" fill="#7FD1EC"/></g>'
+    ),
+    banho: svgIcon(
+      '<path d="M18 52h64v10a16 16 0 0 1-16 16H34a16 16 0 0 1-16-16Z" fill="#fff" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<rect x="14" y="47" width="72" height="7" rx="3.5" fill="#DDEFFB" stroke="#4A3B32" stroke-width="2.6"/>'
+      + '<path d="M78 47V30a8 8 0 0 0-8-8" fill="none" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="30" cy="40" r="6" fill="#EAF6FF" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<circle cx="21" cy="46" r="4" fill="#EAF6FF" stroke="#4A3B32" stroke-width="2.2"/>'
+      + '<g transform="translate(46 28)"><ellipse cx="8" cy="14" rx="12" ry="9" fill="#FFD23F" stroke="#4A3B32" stroke-width="2.8"/><circle cx="16" cy="4" r="7" fill="#FFD23F" stroke="#4A3B32" stroke-width="2.8"/><path d="M22 3h8l-5 5Z" fill="#FF8A3D" stroke="#4A3B32" stroke-width="2"/><circle cx="17" cy="3" r="1.6" fill="#4A3B32"/></g>'
+    ),
+    vestir: svgIcon(
+      '<path d="M36 22l-14 10 8 12 8-5v33h44V39l8 5 8-12-14-10c-6 5-12 8-18 8s-14-3-18-8Z" fill="#FF6F61" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M50 50l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1Z" fill="#FFD23F" stroke="#4A3B32" stroke-width="2.2"/>'
+    ),
+    cafemanha: svgIcon(
+      '<rect x="24" y="44" width="34" height="34" rx="8" fill="#8FD3E8" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M58 50h8a10 10 0 0 1 0 20h-8" fill="none" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M32 34c4-4 4-8 0-12M44 34c4-4 4-8 0-12" fill="none" stroke="#B9C9D0" stroke-width="3.4"/>'
+      + '<path d="M64 32h18l-2 16a4 4 0 0 1-4 4h-6a4 4 0 0 1-4-4Z" fill="#F4B860" stroke="#4A3B32" stroke-width="3"/>'
+      + '<circle cx="73" cy="42" r="2.4" fill="#8A5A2B"/><circle cx="78" cy="46" r="2" fill="#8A5A2B"/>'
+    ),
+    horaBrincar: svgIcon(
+      '<circle cx="30" cy="30" r="9" fill="#C89B6A" stroke="#4A3B32" stroke-width="3"/>'
+      + '<circle cx="70" cy="30" r="9" fill="#C89B6A" stroke="#4A3B32" stroke-width="3"/>'
+      + '<circle cx="50" cy="42" r="20" fill="#D8AE7E" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="50" cy="48" r="9" fill="#F0DCC2" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<circle cx="44" cy="40" r="2.6" fill="#4A3B32"/><circle cx="56" cy="40" r="2.6" fill="#4A3B32"/><circle cx="50" cy="46" r="2.6" fill="#4A3B32"/>'
+      + '<path d="M30 62c0-10 9-14 20-14s20 4 20 14v10a6 6 0 0 1-6 6H36a6 6 0 0 1-6-6Z" fill="#D8AE7E" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<circle cx="34" cy="66" r="6" fill="#C89B6A" stroke="#4A3B32" stroke-width="2.6"/><circle cx="66" cy="66" r="6" fill="#C89B6A" stroke="#4A3B32" stroke-width="2.6"/>'
+    ),
+    escola: svgIcon(
+      '<rect x="22" y="42" width="56" height="40" rx="4" fill="#FF9E9E" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M18 42l32-20 32 20Z" fill="#F2555A" stroke="#4A3B32" stroke-width="3.4"/>'
+      + '<path d="M50 22v-9h13l-4 4 4 5Z" fill="#FFD23F" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<rect x="42" y="60" width="16" height="22" rx="2" fill="#B23A3E"/>'
+      + '<circle cx="50" cy="52" r="5" fill="#FFF6D6" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<path d="M50 49v3l2 2" stroke="#4A3B32" stroke-width="1.8"/>'
+    ),
+    licao: svgIcon(
+      '<path d="M20 30h26v46H24a4 4 0 0 1-4-4Z" fill="#fff" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M80 30H54v46h22a4 4 0 0 0 4-4Z" fill="#F4FAFF" stroke="#4A3B32" stroke-width="3.2"/>'
+      + '<path d="M46 30v46M50 30v46" stroke="#4A3B32" stroke-width="2.4"/>'
+      + '<path d="M27 42h12M27 50h12M27 58h9" stroke="#8FD3E8" stroke-width="2.6"/>'
+      + '<text x="57" y="50" font-family="Arial" font-size="13" font-weight="700" fill="#FF9E9E">A</text>'
+      + '<text x="66" y="60" font-family="Arial" font-size="11" font-weight="700" fill="#8FD3E8">B</text>'
+      + '<g transform="rotate(38 62 60)"><rect x="58" y="40" width="8" height="6" fill="#FF9E9E" stroke="#4A3B32" stroke-width="2.4"/><rect x="58" y="44" width="8" height="30" fill="#FFC93C" stroke="#4A3B32" stroke-width="2.4"/><path d="M58 74l4 8 4-8Z" fill="#FFD9A8" stroke="#4A3B32" stroke-width="2.4"/></g>'
+    ),
+    dormirRotina: svgIcon(
+      '<path d="M62 20a30 30 0 1 0 20 44 24 24 0 0 1-20-44Z" fill="#7C7FC7" stroke="#534AB7" stroke-width="3.4"/>'
+      + '<path d="M40 44q5 4 10 0M30 52q5 4 10 0" fill="none" stroke="#EDEBFF" stroke-width="3"/>'
+      + '<path d="M14 26l2 5 5 2-5 2-2 5-2-5-5-2 5-2Z" fill="#FFD23F"/>'
+      + '<path d="M30 15l1.6 4 4 1.6-4 1.6L30 26l-1.6-4-4-1.6 4-1.6Z" fill="#FFD23F"/>'
+      + '<text x="66" y="34" font-family="Arial" font-size="16" font-weight="700" fill="#EDEBFF">Z</text>'
+      + '<text x="78" y="24" font-family="Arial" font-size="11" font-weight="700" fill="#EDEBFF">z</text>'
+    )
+  };
+
+  var CATEGORIES = {
+    basico: [
+      { id:'sim',      label:'Sim',       phrase:'Sim',            bg:'#D7F2EC' },
+      { id:'nao',      label:'Não',       phrase:'Não',            bg:'#FFE0DA' },
+      { id:'mais',     label:'Mais',      phrase:'Mais',           bg:'#DFF3FB' },
+      { id:'chega',    label:'Chega',     phrase:'Chega, parar',   bg:'#FFF2D6' },
+      { id:'obrigado', label:'Obrigado',  phrase:'Obrigado',       bg:'#FFE3E3' },
+      { id:'oi',       label:'Oi',        phrase:'Oi!',            bg:'#FFF6DD' },
+      { id:'tchau',    label:'Tchau',     phrase:'Tchau!',         bg:'#E4F8F3' },
+      { id:'naoSei',   label:'Não sei',   phrase:'Não sei',        bg:'#F0EAFB' }
+    ],
+    necessidades: [
+      { id:'agua',      label:'Água',        phrase:'Quero água',                   bg:'#DFF3FB' },
+      { id:'comida',    label:'Comida',      phrase:'Estou com fome',               bg:'#FFF2D6' },
+      { id:'banheiro',  label:'Banheiro',    phrase:'Preciso ir ao banheiro',       bg:'#E4F8F3' },
+      { id:'brincar',   label:'Brincar',     phrase:'Quero brincar',                bg:'#FFE9E9' },
+      { id:'descansar', label:'Descansar',   phrase:'Quero descansar',              bg:'#EDEBFF' },
+      { id:'silencio',  label:'Ficar quieto',phrase:'Quero ficar sozinho um pouco', bg:'#F1EFE8' },
+      { id:'abraco',    label:'Abraço',      phrase:'Quero um abraço',              bg:'#FFE3E3' }
+    ],
+    sentimentos: [
+      { id:'feliz',    label:'Feliz',    phrase:'Estou feliz',       bg:'#FFF2D6' },
+      { id:'triste',   label:'Triste',   phrase:'Estou triste',      bg:'#DFF3FB' },
+      { id:'raiva',    label:'Com raiva',phrase:'Estou com raiva',   bg:'#FFE0DA' },
+      { id:'medo',     label:'Medo',     phrase:'Estou com medo',    bg:'#EDEBFF' },
+      { id:'cansado',  label:'Cansado',  phrase:'Estou cansado',     bg:'#F1EFE8' },
+      { id:'calmo',    label:'Calmo',    phrase:'Estou calmo',       bg:'#E4F8F3' },
+      { id:'animado',  label:'Animado',  phrase:'Estou animado',     bg:'#FFF2D6' },
+      { id:'confuso',  label:'Confuso',  phrase:'Estou confuso',     bg:'#F0EAFB' }
+    ],
+    ajuda: [
+      { id:'precisaAjuda',  label:'Preciso de ajuda',  phrase:'Preciso de ajuda',            bg:'#FFE3DD' },
+      { id:'naoEntendi',    label:'Não entendi',       phrase:'Não entendi',                 bg:'#F0EAFB' },
+      { id:'doiAqui',       label:'Dói aqui',          phrase:'Dói aqui',                    bg:'#FFF2D6' },
+      { id:'perdido',       label:'Estou perdido',     phrase:'Estou perdido',               bg:'#FFE0DA' },
+      { id:'quaseMae',      label:'Quero meus pais',   phrase:'Quero minha mãe ou meu pai',  bg:'#DFF3FB' },
+      { id:'precisaAdulto', label:'Preciso de adulto', phrase:'Preciso de um adulto',        bg:'#FFF6DD' },
+      { id:'ehDificil',     label:'É difícil',         phrase:'Isso é difícil para mim',     bg:'#E4F8F3' },
+      { id:'repetir',       label:'Pode repetir?',     phrase:'Pode repetir, por favor?',    bg:'#DFF3FB' }
+    ],
+    rotina: [
+      { id:'acordar',      label:'Acordar',        phrase:'Hora de acordar!',              bg:'#CDEBFF' },
+      { id:'escovar',      label:'Escovar dentes', phrase:'Hora de escovar os dentes!',    bg:'#E4F8F3' },
+      { id:'banho',        label:'Tomar banho',    phrase:'Hora do banho!',                bg:'#E6F5FF' },
+      { id:'vestir',       label:'Se vestir',      phrase:'Hora de se vestir!',            bg:'#DFF3FB' },
+      { id:'cafemanha',    label:'Café da manhã',  phrase:'Hora do café da manhã!',        bg:'#FFF2D6' },
+      { id:'horaBrincar',  label:'Hora de brincar',phrase:'Hora de brincar!',              bg:'#FFE9E9' },
+      { id:'escola',       label:'Ir à escola',    phrase:'Hora de ir para a escola!',     bg:'#FFE3E3' },
+      { id:'licao',        label:'Fazer lição',    phrase:'Hora de fazer a lição de casa!',bg:'#FFF6DD' },
+      { id:'dormirRotina', label:'Dormir',         phrase:'Hora de dormir. Boa noite!',    bg:'#EDEBFF' }
+    ]
+  };
+
+  /* ============================================================
+     ÁUDIO
+     ============================================================ */
+  var AudioCtx = window.AudioContext || window.webkitAudioContext;
+  var actx = null;
+  function ctx(){ if(!actx && AudioCtx){ try{ actx = new AudioCtx(); }catch(e){} } return actx; }
+  function beep(freq, dur, type, delay){
+    var c = ctx(); if(!c) return;
+    try{
+      var t0 = c.currentTime + (delay||0);
+      var osc = c.createOscillator(); var gain = c.createGain();
+      osc.type = type||'sine';
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.15, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+      osc.connect(gain).connect(c.destination);
+      osc.start(t0); osc.stop(t0+dur+0.02);
+    }catch(e){}
+  }
+  function playTap(){ beep(720,0.09,'triangle'); }
+
+  var lastPhrase = '';
+  function speak(text){
+    if(!text) return;
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'pt-BR'; u.rate = 0.95; u.pitch = 1.1;
+      var voices = window.speechSynthesis.getVoices();
+      var ptVoice = voices.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('pt') === 0; })[0];
+      if(ptVoice) u.voice = ptVoice;
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = function(){}; }
+
+  /* ============================================================
+     HISTÓRICO SEMANAL DE SENTIMENTOS (guardado neste aparelho)
+     ============================================================ */
+  var MOOD_KEY = 'minhavoz-mood-history';
+  var memoryMoodLog = []; // usado se localStorage não estiver disponível
+
+  function loadMoodHistory(){
+    try{
+      var raw = window.localStorage.getItem(MOOD_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(e){
+      return memoryMoodLog;
+    }
+  }
+  function saveMoodHistory(list){
+    try{
+      window.localStorage.setItem(MOOD_KEY, JSON.stringify(list));
+    }catch(e){
+      memoryMoodLog = list;
+    }
+  }
+  function todayKey(d){
+    d = d || new Date();
+    var mm = d.getMonth()+1; mm = (mm<10?'0':'')+mm;
+    var dd = d.getDate(); dd = (dd<10?'0':'')+dd;
+    return d.getFullYear()+'-'+mm+'-'+dd;
+  }
+  function recordMood(item){
+    var list = loadMoodHistory();
+    list.push({ date: todayKey(), id: item.id, label: item.label });
+    if(list.length > 500) list = list.slice(list.length-500);
+    saveMoodHistory(list);
+  }
+
+  var WEEKDAY_NAMES = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  function renderWeekHistory(){
+    var list = loadMoodHistory();
+    var byDate = {};
+    list.forEach(function(entry){
+      if(!byDate[entry.date]) byDate[entry.date] = [];
+      byDate[entry.date].push(entry);
+    });
+    var weekList = document.getElementById('weekList');
+    weekList.innerHTML = '';
+    var today = new Date();
+    for(var i=0; i<7; i++){
+      var d = new Date(today);
+      d.setDate(today.getDate() - i);
+      var key = todayKey(d);
+      var isToday = i === 0;
+      var row = document.createElement('div');
+      row.className = 'day-row';
+      var label = document.createElement('div');
+      label.className = 'day-label' + (isToday ? ' today' : '');
+      var dd = d.getDate(); dd = (dd<10?'0':'')+dd;
+      var mo = d.getMonth()+1; mo = (mo<10?'0':'')+mo;
+      label.textContent = (isToday ? 'Hoje · ' : '') + WEEKDAY_NAMES[d.getDay()] + ' ' + dd + '/' + mo;
+      row.appendChild(label);
+      var entries = byDate[key];
+      if(entries && entries.length){
+        var chips = document.createElement('div');
+        chips.className = 'day-chips';
+        entries.forEach(function(entry){
+          var chip = document.createElement('div');
+          chip.className = 'day-chip';
+          var mini = document.createElement('span');
+          mini.className = 'mini-icon';
+          mini.innerHTML = ICONS[entry.id] || '';
+          chip.appendChild(mini);
+          var txt = document.createElement('span');
+          txt.textContent = entry.label;
+          chip.appendChild(txt);
+          chips.appendChild(chip);
+        });
+        row.appendChild(chips);
+      } else {
+        var empty = document.createElement('div');
+        empty.className = 'day-empty';
+        empty.textContent = 'Nenhum sentimento registrado';
+        row.appendChild(empty);
+      }
+      weekList.appendChild(row);
+    }
+  }
+
+  var historyOverlay = document.getElementById('historyOverlay');
+  document.getElementById('historyBtn').addEventListener('click', function(){
+    renderWeekHistory();
+    historyOverlay.classList.add('show');
+  });
+  document.getElementById('closeHistoryBtn').addEventListener('click', function(){
+    historyOverlay.classList.remove('show');
+  });
+  document.getElementById('clearHistoryBtn').addEventListener('click', function(){
+    saveMoodHistory([]);
+    memoryMoodLog = [];
+    renderWeekHistory();
+  });
+
+  /* ============================================================
+     ESTADO E RENDER
+     ============================================================ */
+  var currentTab = 'basico';
+  var grid = document.getElementById('grid');
+  var msgText = document.getElementById('msgText');
+  var repeatBtn = document.getElementById('repeatBtn');
+  var logList = document.getElementById('logList');
+  var log = [];
+
+  /* Ícones: tenta carregar uma ILUSTRAÇÃO em imagens/<id>.(png/webp/jpg/svg).
+     Se não existir nenhuma, usa o desenho em código (ICONS) como reserva.
+     Assim o app funciona 100% sem imagens e cada arquivo que você adicionar
+     na pasta "imagens" troca só aquele ícone pela ilustração. */
+  var IMG_DIR = 'imagens/';
+  var IMG_EXTS = ['png','webp','jpg','jpeg','svg'];
+
+  function buildIcon(item){
+    var wrap = document.createElement('div');
+    wrap.className = 'icon-wrap';
+    var svgFallback = ICONS[item.id] || '';
+    var img = document.createElement('img');
+    img.alt = '';
+    img.setAttribute('aria-hidden', 'true');
+    var idx = 0;
+    img.addEventListener('error', function(){
+      idx++;
+      if(idx < IMG_EXTS.length){
+        img.src = IMG_DIR + item.id + '.' + IMG_EXTS[idx];
+      } else {
+        wrap.classList.remove('has-photo');
+        wrap.innerHTML = svgFallback;
+      }
+    });
+    img.addEventListener('load', function(){ wrap.classList.add('has-photo'); });
+    img.src = IMG_DIR + item.id + '.' + IMG_EXTS[0];
+    wrap.appendChild(img);
+    return wrap;
+  }
+
+  function renderGrid(){
+    grid.innerHTML = '';
+    CATEGORIES[currentTab].forEach(function(item){
+      var btn = document.createElement('button');
+      btn.className = 'card-btn';
+      btn.style.background = item.bg;
+      btn.setAttribute('aria-label', item.phrase);
+      var iconWrap = buildIcon(item);
+      var label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = item.label;
+      btn.appendChild(iconWrap);
+      btn.appendChild(label);
+      btn.addEventListener('click', function(){
+        say(item.phrase);
+        if(currentTab === 'sentimentos') recordMood(item);
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function say(phrase){
+    lastPhrase = phrase;
+    msgText.textContent = phrase;
+    msgText.classList.remove('placeholder');
+    repeatBtn.disabled = false;
+    playTap();
+    speak(phrase);
+    addToLog(phrase);
+  }
+
+  function addToLog(phrase){
+    var now = new Date();
+    var hh = now.getHours(); hh = (hh < 10 ? '0' : '') + hh;
+    var mm = now.getMinutes(); mm = (mm < 10 ? '0' : '') + mm;
+    log.unshift({ phrase: phrase, time: hh+':'+mm, tab: currentTab });
+    if(log.length > 6) log.pop();
+    renderLog();
+  }
+
+  function renderLog(){
+    if(log.length === 0){
+      logList.innerHTML = '<div class="log-empty">Nada foi dito ainda hoje.</div>';
+      return;
+    }
+    logList.innerHTML = '';
+    log.forEach(function(entry){
+      var row = document.createElement('div');
+      row.className = 'log-item';
+      var dot = document.createElement('span');
+      dot.className = 'dot';
+      dot.style.background = entry.tab === 'sentimentos' ? 'var(--mint)' : 'var(--coral)';
+      var txt = document.createElement('span');
+      txt.className = 'txt';
+      txt.textContent = entry.phrase;
+      var time = document.createElement('span');
+      time.className = 'time';
+      time.textContent = entry.time;
+      row.appendChild(dot); row.appendChild(txt); row.appendChild(time);
+      logList.appendChild(row);
+    });
+  }
+
+  repeatBtn.addEventListener('click', function(){ if(lastPhrase){ playTap(); speak(lastPhrase); } });
+
+  var tabBasico = document.getElementById('tabBasico');
+  var tabNecessidades = document.getElementById('tabNecessidades');
+  var tabSentimentos = document.getElementById('tabSentimentos');
+  var tabAjuda = document.getElementById('tabAjuda');
+  var tabRotina = document.getElementById('tabRotina');
+  function setTab(tab){
+    currentTab = tab;
+    tabBasico.classList.toggle('active', tab === 'basico');
+    tabNecessidades.classList.toggle('active', tab === 'necessidades');
+    tabSentimentos.classList.toggle('active', tab === 'sentimentos');
+    tabAjuda.classList.toggle('active', tab === 'ajuda');
+    tabRotina.classList.toggle('active', tab === 'rotina');
+    renderGrid();
+  }
+  tabBasico.addEventListener('click', function(){ setTab('basico'); });
+  tabNecessidades.addEventListener('click', function(){ setTab('necessidades'); });
+  tabSentimentos.addEventListener('click', function(){ setTab('sentimentos'); });
+  tabAjuda.addEventListener('click', function(){ setTab('ajuda'); });
+  tabRotina.addEventListener('click', function(){ setTab('rotina'); });
+
+  /* ============================================================
+     ACESSIBILIDADE
+     ============================================================ */
+  var root = document.documentElement;
+  var a11ySettings = { contrast:false, largeText:false, reduceMotion:false };
+  function applyA11y(){
+    root.classList.toggle('a11y-contrast', a11ySettings.contrast);
+    root.classList.toggle('a11y-large-text', a11ySettings.largeText);
+    root.classList.toggle('a11y-reduce-motion', a11ySettings.reduceMotion);
+  }
+  var a11yOverlay = document.getElementById('a11yOverlay');
+  document.getElementById('a11yBtn').addEventListener('click', function(){ a11yOverlay.classList.add('show'); });
+  document.getElementById('closeA11yBtn').addEventListener('click', function(){ a11yOverlay.classList.remove('show'); });
+  document.getElementById('toggleContrast').addEventListener('change', function(e){ a11ySettings.contrast = e.target.checked; applyA11y(); });
+  document.getElementById('toggleLargeText').addEventListener('change', function(e){ a11ySettings.largeText = e.target.checked; applyA11y(); });
+  document.getElementById('toggleReduceMotion').addEventListener('change', function(e){ a11ySettings.reduceMotion = e.target.checked; applyA11y(); });
+
+  var infoOverlay = document.getElementById('infoOverlay');
+  document.getElementById('infoBtn').addEventListener('click', function(){ infoOverlay.classList.add('show'); });
+  document.getElementById('closeInfoBtn').addEventListener('click', function(){ infoOverlay.classList.remove('show'); });
+
+  var TAB_NAMES = { basico:'Básico', necessidades:'Preciso de', sentimentos:'Sinto', ajuda:'Ajuda', rotina:'Rotina' };
+  document.getElementById('readScreenBtn').addEventListener('click', function(){
+    var tabName = TAB_NAMES[currentTab];
+    var items = CATEGORIES[currentTab].map(function(i){ return i.label; }).join(', ');
+    var text = 'Tela do Eu Quero Dizer. Aba selecionada: '+tabName+'. Ícones disponíveis: '+items+'. Toque em um ícone para ouvir a frase.';
+    speak(text);
+  });
+
+  /* ============================================================
+     TELA INICIAL
+     ============================================================ */
+  var splash = document.getElementById('splash');
+  var startBtn = document.getElementById('startBtn');
+  var appEl = document.getElementById('app');
+  function startGame(){
+    splash.classList.add('hide');
+    appEl.removeAttribute('aria-hidden');
+    // aproveita o toque do usuário para liberar áudio e voz
+    try{ var c = ctx(); if(c && c.state === 'suspended'){ c.resume(); } }catch(e){}
+    try{ if('speechSynthesis' in window){ window.speechSynthesis.getVoices(); } }catch(e){}
+    playTap();
+    setTimeout(function(){ splash.hidden = true; }, 500);
+  }
+  startBtn.addEventListener('click', startGame);
+  startBtn.focus();
+
+  renderGrid();
+})();
+</script>
+</body>
+</html>
