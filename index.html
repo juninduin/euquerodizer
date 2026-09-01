@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Eu Quero Dizer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
     display:flex; align-items:flex-start; justify-content:center;
     overflow-x:hidden;
   }
-  #app{ width:100%; max-width:480px; min-height:100vh; position:relative; padding-bottom:30px; }
+  #app{ width:100%; max-width:480px; min-height:100vh; position:relative; padding-bottom:calc(88px + env(safe-area-inset-bottom)); }
   h1,h2{ font-family:'Fredoka',-apple-system,sans-serif; margin:0; }
   button{ font-family:inherit; border:none; cursor:pointer; background:none; -webkit-tap-highlight-color:transparent; }
   button:focus-visible, [tabindex]:focus-visible{ outline:3px solid var(--coral); outline-offset:3px; }
@@ -68,25 +68,36 @@
   .msg-bar .repeat-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #C94A3E; }
   .msg-bar .repeat-btn[disabled]{ opacity:.35; box-shadow:none; }
 
-  /* ---------- TABS ---------- */
-  .tabs{ display:flex; gap:10px; margin:14px 18px 16px; }
-  .tab-btn{
-    flex:1; padding:14px 8px; border-radius:18px; font-weight:700; font-size:1.02rem;
-    background:var(--card); color:var(--sub); box-shadow:var(--shadow);
-    display:flex; align-items:center; justify-content:center; gap:8px;
+  /* ---------- MENU (rodapé, estilo app) ---------- */
+  .tabs{
+    position:fixed; left:0; right:0; bottom:0; z-index:50;
+    max-width:480px; margin:0 auto;
+    display:flex; gap:4px;
+    background:var(--card); border-top:1px solid #EFE9F7;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    box-shadow:0 -6px 22px rgba(58,49,83,0.12);
   }
-  .tab-btn.active{ background:var(--coral); color:#fff; box-shadow:0 6px 0 #C94A3E; }
-  .tab-btn[data-tab="sentimentos"].active{ background:var(--mint); box-shadow:0 6px 0 #2C9689; }
-  .tab-btn[data-tab="rotina"].active{ background:#7F77DD; box-shadow:0 6px 0 #534AB7; }
-  .tab-btn[data-tab="basico"].active{ background:var(--sun); color:#7A5200; box-shadow:0 6px 0 #C99A1F; }
-  .tab-btn[data-tab="ajuda"].active{ background:#F26D6D; box-shadow:0 6px 0 #C2504F; }
-  .tabs{ display:block; margin:14px 18px 16px; }
-  .tabs-row{ display:flex; gap:8px; }
-  .tabs-row + .tabs-row{ margin-top:8px; }
-  .tabs-row .tab-btn{ flex:1; font-size:.86rem; padding:12px 4px; }
+  .tab-btn{
+    flex:1 1 0; min-width:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    padding:8px 2px; border-radius:14px;
+    font-weight:700; font-size:.72rem; line-height:1;
+    background:none; color:var(--sub); box-shadow:none;
+  }
+  .tab-btn svg{ width:22px; height:22px; }
+  .tab-btn span{ max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+  .tab-btn.active{ background:var(--coral); color:#fff; }
+  .tab-btn[data-tab="basico"].active{ background:var(--sun); color:#7A5200; }
+  .tab-btn[data-tab="necessidades"].active{ background:var(--coral); color:#fff; }
+  .tab-btn[data-tab="sentimentos"].active{ background:var(--mint); color:#fff; }
+  .tab-btn[data-tab="rotina"].active{ background:#7F77DD; color:#fff; }
+  .tab-btn[data-tab="ajuda"].active{ background:#F26D6D; color:#fff; }
+  .tab-btn:active{ transform:translateY(1px); }
+  html.a11y-contrast .tabs{ border-top:3px solid #000; }
+  html.a11y-contrast .tab-btn.active{ outline:3px solid #000; }
 
   /* ---------- ICON GRID (float layout: robust across browsers) ---------- */
-  .grid{ width:100%; padding:0 18px; }
+  .grid{ width:100%; padding:12px 18px 0; }
   .grid:after{ content:""; display:table; clear:both; }
   .card-btn{
     float:left; width:47%; margin-right:6%; margin-bottom:16px;
@@ -257,32 +268,28 @@
     </button>
   </div>
 
-  <div class="tabs">
-    <div class="tabs-row">
-      <button class="tab-btn active" data-tab="basico" id="tabBasico">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
-        Básico
-      </button>
-      <button class="tab-btn" data-tab="sentimentos" id="tabSentimentos">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M8 15s1.5 2 4 2 4-2 4-2"/></svg>
-        Sinto
-      </button>
-      <button class="tab-btn" data-tab="ajuda" id="tabAjuda">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
-        Ajuda
-      </button>
-    </div>
-    <div class="tabs-row">
-      <button class="tab-btn" data-tab="necessidades" id="tabNecessidades">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.35-9.5-8.5C.7 8.8 2.3 5 6 5c2 0 3.3 1.1 4 2.2C10.7 6.1 12 5 14 5c3.7 0 5.3 3.8 3.5 7.5C15 16.65 12 21 12 21z"/></svg>
-        Preciso
-      </button>
-      <button class="tab-btn" data-tab="rotina" id="tabRotina">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-        Rotina
-      </button>
-    </div>
-  </div>
+  <nav class="tabs" aria-label="Categorias">
+    <button class="tab-btn active" data-tab="basico" id="tabBasico">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      <span>Básico</span>
+    </button>
+    <button class="tab-btn" data-tab="necessidades" id="tabNecessidades">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.35-9.5-8.5C.7 8.8 2.3 5 6 5c2 0 3.3 1.1 4 2.2C10.7 6.1 12 5 14 5c3.7 0 5.3 3.8 3.5 7.5C15 16.65 12 21 12 21z"/></svg>
+      <span>Preciso</span>
+    </button>
+    <button class="tab-btn" data-tab="sentimentos" id="tabSentimentos">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M8 15s1.5 2 4 2 4-2 4-2"/></svg>
+      <span>Sinto</span>
+    </button>
+    <button class="tab-btn" data-tab="ajuda" id="tabAjuda">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>Ajuda</span>
+    </button>
+    <button class="tab-btn" data-tab="rotina" id="tabRotina">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span>Rotina</span>
+    </button>
+  </nav>
 
   <div class="grid" id="grid"></div>
 
