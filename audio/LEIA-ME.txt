@@ -1,0 +1,103 @@
+COMO TROCAR A VOZ ROBÓTICA POR VOZ HUMANA GRAVADA
+====================================================
+
+Por quê: o app vai ser usado por várias crianças da escola, em
+aparelhos diferentes (iPhone, Android, Chromebook...). A voz "de
+fábrica" de cada aparelho varia muito e em vários vai soar robótica
+— e não tem como ensinar cada criança a ajustar configuração.
+
+A solução: gravar (ou gerar uma vez só) um arquivo de áudio para
+cada frase abaixo. Quando o arquivo existe, o app toca ELE sempre —
+mesma voz, em qualquer aparelho, sem internet, sem configuração.
+Quando não existe, o app continua funcionando normalmente com a voz
+sintética do navegador (como hoje).
+
+COMO FAZER
+----------
+1) Grave (ou gere) um áudio curto para cada frase da lista abaixo.
+2) Salve o arquivo DENTRO desta pasta 'audio'.
+3) O nome do arquivo tem que ser EXATAMENTE o código indicado,
+   com extensão .mp3 (também aceita .m4a .ogg .wav).
+   Ex.:  audio/agua.mp3   audio/escovar.mp3
+4) Recarregue o index.html. O ícone que tiver áudio passa a tocar a
+   gravação; o que não tiver continua com a voz do navegador.
+5) Não precisa gravar todas de uma vez — pode ir adicionando aos
+   poucos, uma frase de cada vez.
+
+FORMAS DE GRAVAR (escolha uma)
+-------------------------------
+A) VOZ REAL (recomendado — soa mais quente e nunca fica robótica):
+   Peça pra um adulto (ou até a própria Fernanda) gravar cada frase
+   no celular (gravador de voz / WhatsApp), num lugar quieto, num
+   tom animado e claro. Depois é só exportar/renomear cada áudio com
+   o código certo e jogar aqui na pasta. É o método que garante a
+   voz mais natural possível, sem depender de tecnologia nenhuma.
+
+B) VOZ SINTÉTICA GERADA UMA VEZ (bom e rápido, ainda de graça):
+   Use um site gratuito de "texto para voz" (ex.: ttsmp3.com, ou o
+   gerador de voz do Edge/Word em português), digite cada frase,
+   baixe o mp3 gerado e renomeie com o código certo. Só precisa
+   fazer isso uma vez — depois todo mundo na escola ouve a mesma
+   voz, sem precisar de internet no dia a dia.
+
+Dica de arquivo: MP3, poucos segundos, sem ruído de fundo.
+
+LISTA DE CÓDIGOS E FRASES (40 no total)
+-----------------------------------------
+
+--- BÁSICO ---
+  audio/sim.mp3           ->  "Sim"
+  audio/nao.mp3            ->  "Não"
+  audio/mais.mp3           ->  "Mais"
+  audio/chega.mp3          ->  "Chega, parar"
+  audio/obrigado.mp3       ->  "Obrigado"
+  audio/oi.mp3              ->  "Oi!"
+  audio/tchau.mp3          ->  "Tchau!"
+  audio/naoSei.mp3         ->  "Não sei"
+
+--- PRECISO ---
+  audio/agua.mp3            ->  "Quero água"
+  audio/comida.mp3          ->  "Estou com fome"
+  audio/banheiro.mp3        ->  "Preciso ir ao banheiro"
+  audio/brincar.mp3         ->  "Quero brincar"
+  audio/descansar.mp3       ->  "Quero descansar"
+  audio/silencio.mp3        ->  "Quero ficar sozinho um pouco"
+  audio/abraco.mp3          ->  "Quero um abraço"
+
+--- SINTO ---
+  audio/feliz.mp3            ->  "Estou feliz"
+  audio/triste.mp3          ->  "Estou triste"
+  audio/raiva.mp3            ->  "Estou com raiva"
+  audio/medo.mp3            ->  "Estou com medo"
+  audio/cansado.mp3         ->  "Estou cansado"
+  audio/calmo.mp3            ->  "Estou calmo"
+  audio/animado.mp3         ->  "Estou animado"
+  audio/confuso.mp3         ->  "Estou confuso"
+
+--- AJUDA ---
+  audio/precisaAjuda.mp3    ->  "Preciso de ajuda"
+  audio/naoEntendi.mp3      ->  "Não entendi"
+  audio/doiAqui.mp3         ->  "Dói aqui"
+  audio/perdido.mp3         ->  "Estou perdido"
+  audio/quaseMae.mp3        ->  "Quero minha mãe ou meu pai"
+  audio/precisaAdulto.mp3   ->  "Preciso de um adulto"
+  audio/ehDificil.mp3       ->  "Isso é difícil para mim"
+  audio/repetir.mp3         ->  "Pode repetir, por favor?"
+
+--- ROTINA ---
+  audio/acordar.mp3         ->  "Hora de acordar!"
+  audio/escovar.mp3         ->  "Hora de escovar os dentes!"
+  audio/banho.mp3            ->  "Hora do banho!"
+  audio/vestir.mp3          ->  "Hora de se vestir!"
+  audio/cafemanha.mp3       ->  "Hora do café da manhã!"
+  audio/horaBrincar.mp3     ->  "Hora de brincar!"
+  audio/escola.mp3          ->  "Hora de ir para a escola!"
+  audio/licao.mp3            ->  "Hora de fazer a lição de casa!"
+  audio/dormirRotina.mp3    ->  "Hora de dormir. Boa noite!"
+
+Total: 40 áudios.
+
+OBS: os botões de cima do app (ler a tela, repetir frase, testar voz
+no painel de Acessibilidade) sempre usam a voz sintética do
+navegador, porque falam textos que mudam — só os 40 botões de frase
+fixa acima usam o áudio gravado quando ele existir.

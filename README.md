@@ -29,7 +29,21 @@ nenhuma imagem.
   (uma criança fazendo cada ação, estilo material didático).
 - `imagens/_originais/` — backup das primeiras imagens.
 
+## Voz: gravada (recomendado para a escola) ou sintética
+
+Por padrão, o app fala usando a voz sintética do navegador (`SpeechSynthesis`),
+que varia de qualidade conforme o aparelho — em alguns celulares soa robótica.
+
+Como o app é usado por várias crianças em aparelhos diferentes, o ideal é
+colocar uma **voz gravada** (a sua própria, de um adulto, ou gerada uma vez
+num site de texto-para-voz) em `audio/<código>.mp3`. Quando o arquivo existe,
+o app toca sempre ele — mesma voz, em qualquer aparelho, sem internet.
+Quando não existe, continua caindo na voz do navegador normalmente.
+
+- `audio/LEIA-ME.txt` — lista dos 40 códigos e frases, com o passo a passo.
+
 ## Tecnologia
 
 Um único arquivo `index.html` (HTML + CSS + JavaScript puro).
-Voz pela `SpeechSynthesis` do navegador, em português.
+Voz por áudio pré-gravado (`audio/<código>.mp3`) com fallback para a
+`SpeechSynthesis` do navegador, em português.

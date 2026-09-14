@@ -858,8 +858,44 @@
     }
     return pickBestVoice(voices);
   }
-  function speak(text){
+  /* ============================================================
+     ÁUDIO GRAVADO (voz humana real, opcional)
+     ------------------------------------------------------------
+     Como o app vai ser usado por várias crianças em aparelhos
+     diferentes (iPhone, Android, Chromebook...) na escola, a voz do
+     navegador de cada aparelho pode variar — em muitos vai soar
+     robótica e ninguém vai estar lá pra ajustar configuração.
+     A solução confiável é: gravar (ou gerar uma vez só) um arquivo
+     de áudio pra cada frase e colocar em audio/<código>.mp3 — igual
+     já funciona com as ilustrações em imagens/<código>.png. Quando
+     existe o arquivo, toca ele (mesma voz sempre, em qualquer
+     aparelho); quando não existe, cai automaticamente na voz
+     sintética do navegador. Veja audio/LEIA-ME.txt.
+     ============================================================ */
+  var AUDIO_DIR = 'audio/';
+  var AUDIO_EXTS = ['mp3','m4a','ogg','wav'];
+  function playRecordedAudio(id, onFail){
+    if(!id){ onFail(); return; }
+    var audio = new Audio();
+    var idx = 0;
+    function tryNext(){
+      if(idx >= AUDIO_EXTS.length){ onFail(); return; }
+      audio.src = AUDIO_DIR + id + '.' + AUDIO_EXTS[idx];
+    }
+    audio.addEventListener('error', function(){ idx++; tryNext(); });
+    audio.addEventListener('canplaythrough', function(){
+      try{ window.speechSynthesis.cancel(); }catch(e){}
+      audio.play().catch(onFail);
+    }, { once:true });
+    tryNext();
+  }
+
+  function speak(text, id){
     if(!text) return;
+    if(id){ playRecordedAudio(id, function(){ speakSynthetic(text); }); return; }
+    speakSynthetic(text);
+  }
+  function speakSynthetic(text){
     if(!('speechSynthesis' in window)) return;
     try{
       window.speechSynthesis.cancel();
@@ -1029,20 +1065,22 @@
       btn.appendChild(iconWrap);
       btn.appendChild(label);
       btn.addEventListener('click', function(){
-        say(item.phrase);
+        say(item.phrase, item.id);
         if(currentTab === 'sentimentos') recordMood(item);
       });
       grid.appendChild(btn);
     });
   }
 
-  function say(phrase){
+  var lastPhraseId = '';
+  function say(phrase, id){
     lastPhrase = phrase;
+    lastPhraseId = id || '';
     msgText.textContent = phrase;
     msgText.classList.remove('placeholder');
     repeatBtn.disabled = false;
     playTap();
-    speak(phrase);
+    speak(phrase, id);
     addToLog(phrase);
   }
 
@@ -1078,7 +1116,7 @@
     });
   }
 
-  repeatBtn.addEventListener('click', function(){ if(lastPhrase){ playTap(); speak(lastPhrase); } });
+  repeatBtn.addEventListener('click', function(){ if(lastPhrase){ playTap(); speak(lastPhrase, lastPhraseId); } });
 
   var tabBasico = document.getElementById('tabBasico');
   var tabNecessidades = document.getElementById('tabNecessidades');
@@ -1179,7 +1217,8 @@
     speak('Oi! É assim que minha voz vai soar.');
   });
   document.getElementById('testVoiceBtn').addEventListener('click', function(){
-    speak(lastPhrase || 'Oi! É assim que minha voz vai soar.');
+    // usa sempre a voz sintética aqui (não o áudio gravado), pra mostrar o efeito real do ajuste
+    speakSynthetic(lastPhrase || 'Oi! É assim que minha voz vai soar.');
   });
   setupVoiceTip();
   populateVoiceList();
