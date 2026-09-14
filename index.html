@@ -155,6 +155,14 @@
   .switch .slider:before{ content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
   .switch input:checked + .slider{ background:var(--coral); }
   .switch input:checked + .slider:before{ transform:translateX(20px); }
+  .a11y-row-voice{ padding-bottom:6px; }
+  .voice-select{
+    width:100%; padding:12px 14px; border-radius:14px; border:2px solid #EFEAF7;
+    background:#FAF8FF; color:var(--ink); font-size:.95rem; font-weight:600;
+  }
+  .voice-select:focus-visible{ outline:3px solid var(--coral); outline-offset:2px; }
+  .a11y-voice-test{ background:var(--mint); box-shadow:0 6px 0 #2E9184; margin-top:10px; }
+  .a11y-voice-test:active{ box-shadow:0 2px 0 #2E9184; }
   .big-btn{ background:var(--coral); color:#fff; font-weight:700; font-size:1.05rem; padding:14px 28px; border-radius:999px; width:100%; box-shadow:0 6px 0 #C94A3E; margin-top:14px; }
   .big-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #C94A3E; }
 
@@ -341,6 +349,15 @@
       <div><div class="a11y-row-label">Reduzir animações</div><div class="a11y-row-desc">Menos movimento na tela</div></div>
       <label class="switch"><input type="checkbox" id="toggleReduceMotion"><span class="slider"></span></label>
     </div>
+    <div class="a11y-row">
+      <div><div class="a11y-row-label">Voz infantil e suave</div><div class="a11y-row-desc">Deixa o tom mais leve e alegre, como para uma criança</div></div>
+      <label class="switch"><input type="checkbox" id="toggleChildVoice"><span class="slider"></span></label>
+    </div>
+    <div class="a11y-row a11y-row-voice">
+      <div><div class="a11y-row-label">Voz</div><div class="a11y-row-desc">Escolha a voz que soar mais natural no seu aparelho</div></div>
+    </div>
+    <select id="voiceSelect" class="voice-select"></select>
+    <button class="big-btn a11y-voice-test" id="testVoiceBtn" type="button">🔊 Testar voz</button>
     <button class="big-btn" id="closeA11yBtn">Fechar</button>
   </div>
 </div>
@@ -783,20 +800,77 @@
   function playTap(){ beep(720,0.09,'triangle'); }
 
   var lastPhrase = '';
+  var VOICE_KEY = 'minhavoz-voice-name';
+  var CHILD_VOICE_KEY = 'minhavoz-child-voice';
+  var chosenVoiceName = '';
+  var childVoiceMode = true; // padrão: tom mais leve e infantil, já que o app é para crianças
+  try{ chosenVoiceName = window.localStorage.getItem(VOICE_KEY) || ''; }catch(e){}
+  try{
+    var savedChild = window.localStorage.getItem(CHILD_VOICE_KEY);
+    if(savedChild !== null) childVoiceMode = savedChild === '1';
+  }catch(e){}
+
+  /* Nem toda "voz em português" soa igual: motores antigos (ex.: "Microsoft
+     Maria") são robóticos, enquanto vozes "Natural"/"Online"/"Google" soam
+     bem mais humanas. Damos preferência a essas quando o usuário não
+     escolheu uma voz manualmente no painel de acessibilidade. Vozes femininas
+     costumam soar mais leves e suaves, o que combina com um app infantil. */
+  var FEMALE_NAME_HINTS = /francisca|luciana|camila|vit[oó]ria|raquel|joana|in[eê]s|helena|carla|fernanda|leila|maria/;
+  var MALE_NAME_HINTS = /daniel|f[aá]bio|felipe|ant[oô]nio|ricardo|jorge|diego/;
+  function scoreVoice(v){
+    var name = (v.name || '').toLowerCase();
+    var lang = (v.lang || '').toLowerCase();
+    var score = 0;
+    if(lang.indexOf('pt-br') === 0) score += 20;
+    else if(lang.indexOf('pt') === 0) score += 10;
+    else return -1; // ignora vozes de outros idiomas
+    if(/natural|online|neural/.test(name)) score += 15;
+    if(/google/.test(name)) score += 10;
+    if(!v.localService) score += 3; // vozes de nuvem tendem a soar melhor
+    if(/compact|mobile/.test(name)) score -= 5; // motores simplificados, mais robóticos
+    if(childVoiceMode){
+      if(FEMALE_NAME_HINTS.test(name)) score += 4;
+      if(MALE_NAME_HINTS.test(name)) score -= 2;
+    }
+    return score;
+  }
+  function pickBestVoice(voices){
+    var best = null, bestScore = -1;
+    for(var i=0;i<voices.length;i++){
+      var s = scoreVoice(voices[i]);
+      if(s > bestScore){ bestScore = s; best = voices[i]; }
+    }
+    return best;
+  }
+  function getVoices(){
+    try{ return window.speechSynthesis.getVoices() || []; }catch(e){ return []; }
+  }
+  function pickVoice(){
+    var voices = getVoices();
+    if(!voices.length) return null;
+    if(chosenVoiceName){
+      var picked = voices.filter(function(v){ return v.name === chosenVoiceName; })[0];
+      if(picked) return picked;
+    }
+    return pickBestVoice(voices);
+  }
   function speak(text){
     if(!text) return;
     if(!('speechSynthesis' in window)) return;
     try{
       window.speechSynthesis.cancel();
       var u = new SpeechSynthesisUtterance(text);
-      u.lang = 'pt-BR'; u.rate = 0.95; u.pitch = 1.1;
-      var voices = window.speechSynthesis.getVoices();
-      var ptVoice = voices.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('pt') === 0; })[0];
-      if(ptVoice) u.voice = ptVoice;
+      u.lang = 'pt-BR';
+      if(childVoiceMode){ u.rate = 0.96; u.pitch = 1.22; } // tom mais leve, alegre e infantil
+      else { u.rate = 0.92; u.pitch = 1.03; } // tom natural, mais neutro
+      var voice = pickVoice();
+      if(voice){ u.voice = voice; u.lang = voice.lang || u.lang; }
       window.speechSynthesis.speak(u);
     }catch(e){}
   }
-  if('speechSynthesis' in window){ window.speechSynthesis.onvoiceschanged = function(){}; }
+  if('speechSynthesis' in window){
+    window.speechSynthesis.onvoiceschanged = function(){ populateVoiceList(); };
+  }
 
   /* ============================================================
      HISTÓRICO SEMANAL DE SENTIMENTOS (guardado neste aparelho)
@@ -1038,6 +1112,45 @@
   document.getElementById('toggleContrast').addEventListener('change', function(e){ a11ySettings.contrast = e.target.checked; applyA11y(); });
   document.getElementById('toggleLargeText').addEventListener('change', function(e){ a11ySettings.largeText = e.target.checked; applyA11y(); });
   document.getElementById('toggleReduceMotion').addEventListener('change', function(e){ a11ySettings.reduceMotion = e.target.checked; applyA11y(); });
+
+  /* ---------- seletor de voz ---------- */
+  var toggleChildVoice = document.getElementById('toggleChildVoice');
+  toggleChildVoice.checked = childVoiceMode;
+  toggleChildVoice.addEventListener('change', function(e){
+    childVoiceMode = e.target.checked;
+    try{ window.localStorage.setItem(CHILD_VOICE_KEY, childVoiceMode ? '1' : '0'); }catch(err){}
+    populateVoiceList(); // a ordem das vozes recomendadas pode mudar
+    speak('Oi! É assim que minha voz vai soar.');
+  });
+
+  var voiceSelect = document.getElementById('voiceSelect');
+  function populateVoiceList(){
+    if(!('speechSynthesis' in window)) return;
+    var voices = getVoices().filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('pt') === 0; });
+    if(!voices.length) return;
+    var current = voiceSelect.value || chosenVoiceName;
+    voiceSelect.innerHTML = '';
+    var autoOpt = document.createElement('option');
+    autoOpt.value = '';
+    autoOpt.textContent = '✨ Automática (recomendada)';
+    voiceSelect.appendChild(autoOpt);
+    voices.forEach(function(v){
+      var opt = document.createElement('option');
+      opt.value = v.name;
+      opt.textContent = v.name + ' (' + v.lang + ')';
+      voiceSelect.appendChild(opt);
+    });
+    voiceSelect.value = voices.some(function(v){ return v.name === current; }) ? current : (chosenVoiceName || '');
+  }
+  voiceSelect.addEventListener('change', function(e){
+    chosenVoiceName = e.target.value;
+    try{ window.localStorage.setItem(VOICE_KEY, chosenVoiceName); }catch(err){}
+    speak('Oi! É assim que minha voz vai soar.');
+  });
+  document.getElementById('testVoiceBtn').addEventListener('click', function(){
+    speak(lastPhrase || 'Oi! É assim que minha voz vai soar.');
+  });
+  populateVoiceList();
 
   var infoOverlay = document.getElementById('infoOverlay');
   document.getElementById('infoBtn').addEventListener('click', function(){ infoOverlay.classList.add('show'); });
