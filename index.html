@@ -163,6 +163,8 @@
   .voice-select:focus-visible{ outline:3px solid var(--coral); outline-offset:2px; }
   .a11y-voice-test{ background:var(--mint); box-shadow:0 6px 0 #2E9184; margin-top:10px; }
   .a11y-voice-test:active{ box-shadow:0 2px 0 #2E9184; }
+  .voice-current{ font-size:.82rem; font-weight:700; color:var(--sub); margin-top:8px; }
+  .voice-tip{ font-size:.78rem; color:#8B84A3; font-weight:500; margin-top:4px; line-height:1.4; }
   .big-btn{ background:var(--coral); color:#fff; font-weight:700; font-size:1.05rem; padding:14px 28px; border-radius:999px; width:100%; box-shadow:0 6px 0 #C94A3E; margin-top:14px; }
   .big-btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #C94A3E; }
 
@@ -357,6 +359,8 @@
       <div><div class="a11y-row-label">Voz</div><div class="a11y-row-desc">Escolha a voz que soar mais natural no seu aparelho</div></div>
     </div>
     <select id="voiceSelect" class="voice-select"></select>
+    <div class="voice-current" id="currentVoiceLabel"></div>
+    <p class="voice-tip" id="voiceTip"></p>
     <button class="big-btn a11y-voice-test" id="testVoiceBtn" type="button">🔊 Testar voz</button>
     <button class="big-btn" id="closeA11yBtn">Fechar</button>
   </div>
@@ -1120,10 +1124,35 @@
     childVoiceMode = e.target.checked;
     try{ window.localStorage.setItem(CHILD_VOICE_KEY, childVoiceMode ? '1' : '0'); }catch(err){}
     populateVoiceList(); // a ordem das vozes recomendadas pode mudar
+    updateCurrentVoiceLabel();
     speak('Oi! É assim que minha voz vai soar.');
   });
 
   var voiceSelect = document.getElementById('voiceSelect');
+  var currentVoiceLabel = document.getElementById('currentVoiceLabel');
+  var voiceTip = document.getElementById('voiceTip');
+
+  function updateCurrentVoiceLabel(){
+    var v = pickVoice();
+    currentVoiceLabel.textContent = v ? ('Voz atual: ' + v.name + ' (' + v.lang + ')') : 'Voz atual: padrão do aparelho';
+  }
+
+  /* Dica de como conseguir uma voz melhor, de graça — muda conforme o
+     aparelho, porque a forma de instalar uma voz "Natural"/"Melhorada"
+     é diferente no iPhone e no computador. */
+  function setupVoiceTip(){
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPhone|iPad|iPod/.test(ua);
+    var isAndroid = /Android/.test(ua);
+    if(isIOS){
+      voiceTip.textContent = 'Dica no iPhone: em Ajustes → Acessibilidade → Conteúdo Falado → Vozes → Português (Brasil), baixe a versão "Melhorada" ou "Premium". Ela substitui a voz robótica padrão sem precisar mudar nada no app.';
+    } else if(isAndroid){
+      voiceTip.textContent = 'Dica no Android: em Configurações → Sistema → Idiomas → Conversão de texto em voz, escolha o motor "Google" e baixe a voz em Português (Brasil) — ela costuma soar bem mais natural.';
+    } else {
+      voiceTip.textContent = 'Dica no computador: no Edge, procure vozes com "Online (Natural)" na lista acima — são as mais humanas e já vêm prontas. No Chrome, escolha a voz "Google português do Brasil" (precisa de internet).';
+    }
+  }
+
   function populateVoiceList(){
     if(!('speechSynthesis' in window)) return;
     var voices = getVoices().filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('pt') === 0; });
@@ -1141,16 +1170,20 @@
       voiceSelect.appendChild(opt);
     });
     voiceSelect.value = voices.some(function(v){ return v.name === current; }) ? current : (chosenVoiceName || '');
+    updateCurrentVoiceLabel();
   }
   voiceSelect.addEventListener('change', function(e){
     chosenVoiceName = e.target.value;
     try{ window.localStorage.setItem(VOICE_KEY, chosenVoiceName); }catch(err){}
+    updateCurrentVoiceLabel();
     speak('Oi! É assim que minha voz vai soar.');
   });
   document.getElementById('testVoiceBtn').addEventListener('click', function(){
     speak(lastPhrase || 'Oi! É assim que minha voz vai soar.');
   });
+  setupVoiceTip();
   populateVoiceList();
+  updateCurrentVoiceLabel();
 
   var infoOverlay = document.getElementById('infoOverlay');
   document.getElementById('infoBtn').addEventListener('click', function(){ infoOverlay.classList.add('show'); });
